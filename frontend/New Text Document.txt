@@ -1,0 +1,24 @@
+ User có thể bấm like bài hát mà mình thích. Bài hát đó sẽ được lưu vào playlist Liked Songs.
+- Playlist Liked Songs này sẽ được tạo đồng với lúc tạo tài khoản user.
+- Ở sidebar sẽ có 2 mục:
+./ My Playlists: Những playlist do user tự tạo
+./ Liked Songs: Playlist Liked songs do hệ thống tạo mặc định lúc user tạo tài khoản của mình.
+
+Giải thích các giá trị của playlistType:
+- USER: 
+	./ Playlist do user tự tạo
+	./ User có toàn quyền:
+		./ Rename playlist
+		./ Delete playlist
+		./ Add/remove song
+- LIKED
+	./ Playlist hệ thống đặc biệt
+	./ Tự động tạo khi user đăng ký
+	./ Chứa các bài hát user đã like
+
+- SYSTEM
+	./ Playlist hệ thống không do user tạo
+	./ Có thể dùng cho nhiều mục đích về sau
+		./ Recently Played
+		./ Downloaded Songs...
+
