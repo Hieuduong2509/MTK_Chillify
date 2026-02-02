@@ -12,6 +12,8 @@ This is my README
 The "main" branch would be the final.
 The "backend" serves for BE.
 The "frontend" serves for FE.
+Update 2/2/2026
+
 
 Phat:
 Update 2/2/2026
