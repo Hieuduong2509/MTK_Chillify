@@ -1,26 +1,10 @@
 import React from "react";
-import { assets } from "../assets/assets";
-import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  const navigate = useNavigate();
-
   return (
-    <header className="border-b border-white/5 bg-background-light dark:bg-sidebar-dark">
-      <div className="relative flex h-15 max-w-7xl mx-auto items-center px-6 lg:px-8">
-        {/* Logo */}
-        <div className="flex items-center">
-          <a onClick={() => navigate("/")} className="cursor-pointer">
-            <img
-              src={assets.logo}
-              alt="Danniel Vo logo"
-              className="h-24 w-24 object-contain"
-            />
-          </a>
-        </div>
-
-        {/* Search bar */}
-        <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-md">
+    <header className="border-b border-white/5 bg-sidebar-dark">
+      <div className="flex h-14 max-w-7xl mx-auto items-center justify-center px-4">
+        <div className="flex-1 max-w-md">
           <div className="relative group">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">
               search
@@ -32,9 +16,6 @@ const Header = () => {
             />
           </div>
         </div>
-
-        {/* Right spacer */}
-        <div className="w-24"></div>
       </div>
     </header>
   );

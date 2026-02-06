@@ -11,6 +11,7 @@ import MyPlaylist from "./pages/playlist/MyPlaylist";
 import PlaylistDetail from "./pages/playlist/PlaylistDetail";
 import SongDetail from "./pages/song/SongDetail";
 import NotFound from "./pages/404/NotFound";
+import Account from "./pages/account/Account";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/" element={<Home />}></Route>
         <Route path="/section/:id" element={<SectionDetail />}></Route>
 
+        <Route path="/account" element={<Account />}></Route>
         <Route path="/account/profile" element={<Profile />}></Route>
         <Route
           path="/account/change-password"
