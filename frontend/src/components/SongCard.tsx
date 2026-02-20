@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { Song } from "../assets/dummyDB";
 
 interface SongCardProps {
@@ -6,7 +7,11 @@ interface SongCardProps {
 
 export default function SongCard({ song }: SongCardProps) {
   return (
-    <div className="group space-y-3 cursor-pointer">
+    <Link
+      to={`/song/${song.id}`}
+      className="group space-y-3 cursor-pointer block"
+    >
+
       <div className="relative aspect-square w-full rounded-xl overflow-hidden shadow-lg bg-slate-200 dark:bg-border-dark">
         <img
           src={song.image}
@@ -32,6 +37,7 @@ export default function SongCard({ song }: SongCardProps) {
           {song.artist}
         </p>
       </div>
-    </div>
+    </Link>
+
   );
 }
