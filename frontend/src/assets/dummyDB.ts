@@ -59,6 +59,60 @@ export const trendingSongs: Song[] = [
   },
 ];
 
+export const forYouSongs: Song[] = [
+  {
+    id: 1,
+    title: "Morning Chill",
+    artist: "Daily Mix 1",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCYo2Kb7W9sq3uVfCP91NqvJcHiAHRsef0QLPLZFYNZ-tBjy52I-MilEtA26AWFEvHxebqU5MRnqelNIbwuVYYoKo2uvXzbfw5bbl2e8fPEVCirRJXcX-GJWbsCkmtWm5Ag7FS58dBF3CuOC8-1w1jPxnEurWME8fa-XjdOddROVBJKE4c7HJ3A5zffcdhbu2qudaHtR8ljzHl5ssl9J2sC6iKKWBAyIxiMKlD-mEZHz6r-hVX_hYA5taTFQRvdA064QQXj66HDnDgZ",
+  },
+  {
+    id: 2,
+    title: "Discover Weekly",
+    artist: "Fresh tracks for you",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuApsjWrn6KSwwXilTmo33368FwNG6nVErDIFwCXa-tAAeYHt82WoyYJL1bHF0JZRr-vUOFDJE0jb0b-5Na7bSlyliKSBhjCwwA4oBCU9jAr84wde7iSKmwbvZubVcR2nEpZCH_Y5B1Vda_J4uY8VNAR2X5q-mQXjp2Imb3V-pcOzsuEoiLQ_d_wGUnTy8sejTzfqLs4Z3yLqXjFgI9mnbgbdKs4mpXE3GgostqLnYs-jmWqJ5Y8dN-c00Bs9H8E9pJ4DYaTBNkX8eBj",
+  },
+  {
+    id: 3,
+    title: "Festival Vibes",
+    artist: "Fresh tracks for you",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBm9Lkws8kl9HsIs-kPXtfel7qFLDtWHjCUewpmZlHChBADV1pcvpgOBC9edw1rJYXbLY8LRKgSkdfgm4B54hl55znAM7FoW9aHu1RFVBrxGTpX-EPCMiPNHYcIgCqAPoAmKU7jKVq9Gh5R2UTUGvdN7VeUSvWH6lhiHG9JzuARz7I5sFaytMCxtfj6eCjsMONijCK2FPFGMTUzEx1RGz6Bf-HlaLPlkAUmCKl2eRmgKSjsuFKU7xf8wJqR1piRSCiL4OMs2Q0HZzyQ",
+  },
+  {
+    id: 4,
+    title: "Discover Weekly",
+    artist: "Various Artists",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCQDMLSs1zRYpppKZbHyPDS88U5szn8eyG3ztTWMp7EogAMf1EWjFIdLtEXGeIfO0drJ4RkcYD326LwOhQFPtQrxo0We-DOLlvc0F_vIC7EH_P2YUnHGvMcpHD0o0ptW4AuXMir4qPTDhEyJqH5KTsnnbytBd77tHz_VJ_gWKqqwVYaJd1lueAl-D63BjL62Th4LF95mB3DdA5_u_NrU0pU2vidELpULFt38yVxOVtxIRFS7aOgJVSs7rU6ehzE4NRYyIUQHAyh99Ol",
+  },
+];
+export const popularSongs: Song[] = [
+  {
+    id: 1,
+    title: "City Lights",
+    artist: "Urban Pulse",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuCtchLmyw3ZVYjWWRZA-fDp6cb8rvf-KJ5CPrSrXMe0LckxtlBrPxFYifyZ8MZainyJulA9_LWATvRuKg47yVlqysrVrle1iH2AAcy7ZM-4iOEaLR5Qv5KQLx2GHNELfXnOPy5LSwf4mLssUZNWe9bCHloZuseeFOiTNt8QGFq3Pju0l37MZSJFDBnnolkWS2X4UaIpXr5C1TYzmeNjMnwMrm_kqIlkl-6ZtkksGKKPOn_hfJ71p0O1zTvQDoVpm64vU7b_RzXiJTOv",
+  },
+  {
+    id: 2,
+    title: "Golden Era",
+    artist: "Classic Beats",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuD9Zf9gl-4AXznLt7KnwSjbMan-3Dr7R0LeFq9mg0UjaUf3A7xJMTppDBouoOZl3yiU5gCpmDsYDhuaI7D39iGxLIeRvedevI5vhUISG0orHq3L3m2m20lCY1ZyrsqCRQEz3DGuqXYYJ9FrPGR_T--gEoi2TQ8Vs_FhvBDTFqU1aF2COiDruoXeXNUiP7h6PLC1S49O53m1uNAfl3rXZKqbKEpJp_8M0v5bxW2zIOJGNhewvCqBjQpqGEZLEVinttY7_beUB_pcW-Ng",
+  },
+  {
+    id: 3,
+    title: "Dusk to Dawn",
+    artist: "Atmospheric",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuDLdw2Qkpqc6BjEXcJ9urpLehvuqmWfaI59KXYAqr17a2mhn6RRIDHMkjTLqYMk9SE4fuAjrNiJ_3TVyHGBRQhGTWiBdd-Fanc2s1WMkeiHuK2_hU9Rj_38KsLj9M7tPuUG-r0widrHONDR2G-qsk-zx0B0xcud7Qv4Yx5Dg-qKVL7PjTGVw_2rbR90mNNbUEgttBx4Hhj4DCEWYn07m5Sqx472tCTWRK4Ui7pnbN1nPl5Z_mTy7QfpIjeOuMmygea1cczEs6UmSDmA",
+  },
+];
+
 // ============= PLAYLIST =============
 
 export interface Playlist {
@@ -75,57 +129,49 @@ export const playlists: Playlist[] = [
     name: "Midnight Lo-Fi",
     description:
       "Relaxing beats for late night coding sessions, deep focus, and midnight rainy vibes.",
-    cover:
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+    cover: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "summer",
     name: "Summer Hits 2024",
-    cover:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    cover: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
     description: "Hot tracks for the summer season.",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "chill",
     name: "Late Night Chill",
-    cover:
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+    cover: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
     description: "Relaxing beats for night sessions.",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "workout",
     name: "Workout Energy",
-    cover:
-      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429",
+    cover: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429",
     description: "High energy tracks to boost performance.",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "roadtrip",
     name: "Road Trip Mix",
-    cover:
-      "https://images.unsplash.com/photo-1492724441997-5dc865305da7",
+    cover: "https://images.unsplash.com/photo-1492724441997-5dc865305da7",
     description: "Perfect soundtrack for long drives.",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "indie",
     name: "Indie Discoveries",
-    cover:
-      "https://images.unsplash.com/photo-1487215078519-e21cc028cb29",
+    cover: "https://images.unsplash.com/photo-1487215078519-e21cc028cb29",
     description: "Fresh indie music selections.",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "classic",
     name: "Classic Rock Essential",
-    cover:
-      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745",
+    cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745",
     description: "Legendary rock anthems.",
     songs: trendingSongs.slice(0, 5),
   },
 ];
-

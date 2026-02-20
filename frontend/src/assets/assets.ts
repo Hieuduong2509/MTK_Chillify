@@ -1,3 +1,4 @@
+import { forYouSongs, popularSongs, trendingSongs } from "./dummyDB";
 import logo from "./remove_bg.png";
 
 // ============= SIDEBAR ITEMS =============
@@ -32,13 +33,16 @@ export const homeSections = [
   {
     id: 1,
     title: "Trendings",
+    songs: trendingSongs,
   },
   {
     id: 2,
     title: "For you",
+    songs: forYouSongs,
   },
   {
     id: 3,
     title: "Popular",
+    songs: popularSongs,
   },
 ];
