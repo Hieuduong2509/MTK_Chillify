@@ -29,7 +29,7 @@ const MyPlaylist = () => {
             rounded-lg
             text-white
             font-medium
-            transition
+            transition-all duration-300
             cursor-pointer
           "
         >
