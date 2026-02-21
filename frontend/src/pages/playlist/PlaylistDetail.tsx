@@ -8,11 +8,7 @@ const PlaylistDetail = () => {
   const playlist = playlists.find((p) => p.id === id);
 
   if (!playlist) {
-    return (
-      <div className="px-8 py-10 text-white">
-        Playlist not found
-      </div>
-    );
+    return <div className="px-8 py-10 text-white">Playlist not found</div>;
   }
 
   const handlePlayAll = () => {
@@ -28,10 +24,8 @@ const PlaylistDetail = () => {
 
   return (
     <div className="px-8 pt-6 pb-24 text-white">
-
       {/* HEADER */}
-      <section className="flex flex-col md:flex-row gap-8 items-end">
-
+      <section className="flex flex-col md:flex-row gap-8 items-start md:items-end">
         {/* Cover */}
         <div className="shrink-0">
           <div
@@ -51,9 +45,7 @@ const PlaylistDetail = () => {
           </h1>
 
           {playlist.description && (
-            <p className="text-gray-400 max-w-2xl">
-              {playlist.description}
-            </p>
+            <p className="text-gray-400 max-w-2xl">{playlist.description}</p>
           )}
 
           <div className="flex items-center gap-2 text-sm text-white/90 mt-2">
@@ -72,40 +64,38 @@ const PlaylistDetail = () => {
           onClick={handlePlayAll}
           className="w-14 h-14 flex items-center justify-center rounded-full bg-primary text-black hover:scale-105 transition shadow-lg shadow-primary/30"
         >
-          <span className="material-symbols-outlined text-4xl fill-icon">
+          <span className="material-symbols-outlined text-4xl fill-icon cursor-pointer">
             play_arrow
           </span>
         </button>
 
-        <button className="text-gray-400 hover:text-primary transition">
-          <span className="material-symbols-outlined text-3xl">
-            favorite
-          </span>
+        <button className="text-gray-400 hover:text-primary transition cursor-pointer">
+          <span className="material-symbols-outlined text-3xl">favorite</span>
         </button>
 
-        <button className="text-gray-400 hover:text-white transition">
+        <button className="text-gray-400 hover:text-primary transition cursor-pointer">
           <span className="material-symbols-outlined text-3xl">
             download_for_offline
           </span>
         </button>
 
-        <button className="text-gray-400 hover:text-white transition">
-          <span className="material-symbols-outlined text-3xl">
-            more_horiz
-          </span>
+        <button className="text-gray-400 hover:text-primary transition cursor-pointer">
+          <span className="material-symbols-outlined text-3xl">more_horiz</span>
         </button>
       </section>
 
       {/* TABLE HEADER */}
-      <div className="grid grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 px-4 py-3 border-b border-white/10 text-gray-400 text-xs font-bold uppercase tracking-wider">
+      <div
+        className="grid grid-cols-[auto_1fr_auto]
+        md:grid-cols-[auto_1fr_1fr_auto]
+        lg:grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 px-4 py-3 border-b border-white/10 text-gray-400 text-xs font-bold uppercase tracking-wider"
+      >
         <div className="w-8 text-center">#</div>
         <div>Title</div>
         <div className="hidden md:block">Album</div>
         <div className="hidden lg:block">Date Added</div>
         <div className="w-16 text-right">
-          <span className="material-symbols-outlined text-sm">
-            schedule
-          </span>
+          <span className="material-symbols-outlined text-sm">schedule</span>
         </div>
       </div>
 
@@ -115,7 +105,9 @@ const PlaylistDetail = () => {
           <div
             key={song.id}
             onClick={() => handlePlaySong(song)}
-            className="grid grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 px-4 py-3 items-center rounded-lg hover:bg-white/5 group transition cursor-pointer"
+            className="grid grid-cols-[auto_1fr_auto]
+  md:grid-cols-[auto_1fr_1fr_auto]
+  lg:grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 px-4 py-3 items-center rounded-lg hover:bg-white/5 group transition cursor-pointer"
           >
             {/* Number / Play */}
             <div className="w-8 text-center text-gray-500 text-sm group-hover:hidden">
@@ -136,7 +128,7 @@ const PlaylistDetail = () => {
               />
 
               <div className="flex flex-col min-w-0">
-                <span className="text-white text-sm font-semibold truncate group-hover:text-primary transition">
+                <span className="text-white text-sm font-semibold truncate group-hover:text-primary transition-all duration-300">
                   {song.title}
                 </span>
                 <span className="text-gray-400 text-xs truncate">
@@ -156,9 +148,7 @@ const PlaylistDetail = () => {
             </div>
 
             {/* Duration */}
-            <div className="w-16 text-right text-gray-400 text-sm">
-              3:45
-            </div>
+            <div className="w-16 text-right text-gray-400 text-sm">3:45</div>
           </div>
         ))}
       </div>

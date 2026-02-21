@@ -50,7 +50,7 @@ const MyPlaylist = () => {
               hover:bg-white/5
               px-2
               rounded-lg
-              transition
+              transition-all duration-300
             "
           >
             {/* Left Info */}
@@ -67,7 +67,9 @@ const MyPlaylist = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-white">{playlist.name}</h3>
+                <h3 className="font-semibold text-white hover:text-primary transition-all duration-300">
+                  {playlist.name}
+                </h3>
                 <p className="text-sm text-gray-400">
                   {playlist.songs.length} songs
                 </p>
