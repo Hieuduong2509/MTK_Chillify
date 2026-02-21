@@ -11,19 +11,14 @@ interface Playlist {
   songs: Song[];
 }
 
-
-
 const MyPlaylist = () => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
 
   return (
     <div className="px-8 py-8 space-y-8">
-
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-white">
-          My Playlist
-        </h1>
+      <div className="flex items-center justify-between flex-wrap gap-1.5">
+        <h1 className="text-3xl font-bold text-white">My Playlist</h1>
 
         <button
           className="
@@ -35,18 +30,16 @@ const MyPlaylist = () => {
             text-white
             font-medium
             transition
+            cursor-pointer
           "
         >
-          <span className="material-symbols-outlined text-sm">
-            add
-          </span>
+          <span className="material-symbols-outlined text-sm">add</span>
           Add new playlist
         </button>
       </div>
 
       {/* List */}
       <div className="divide-y divide-white/5">
-
         {playlists.map((playlist) => (
           <div
             key={playlist.id}
@@ -74,9 +67,7 @@ const MyPlaylist = () => {
               </div>
 
               <div>
-                <h3 className="font-semibold text-white">
-                  {playlist.name}
-                </h3>
+                <h3 className="font-semibold text-white">{playlist.name}</h3>
                 <p className="text-sm text-gray-400">
                   {playlist.songs.length} songs
                 </p>
@@ -87,9 +78,7 @@ const MyPlaylist = () => {
             <div className="relative">
               <span
                 onClick={() =>
-                  setOpenMenu(
-                    openMenu === playlist.id ? null : playlist.id
-                  )
+                  setOpenMenu(openMenu === playlist.id ? null : playlist.id)
                 }
                 className="material-symbols-outlined text-gray-400 cursor-pointer hover:text-white transition"
               >
@@ -109,21 +98,21 @@ const MyPlaylist = () => {
                     z-50
                   "
                 >
-                  <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-300 hover:bg-white/5">
+                  <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-300 hover:bg-white/5 cursor-pointer">
                     <span className="material-symbols-outlined text-sm">
                       play_arrow
                     </span>
                     Play
                   </button>
 
-                  <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-300 hover:bg-white/5">
+                  <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-300 hover:bg-white/5 cursor-pointer">
                     <span className="material-symbols-outlined text-sm">
                       edit
                     </span>
                     Edit details
                   </button>
 
-                  <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-400 hover:bg-white/5">
+                  <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-400 hover:bg-white/5 cursor-pointer">
                     <span className="material-symbols-outlined text-sm">
                       delete
                     </span>
@@ -134,14 +123,7 @@ const MyPlaylist = () => {
             </div>
           </div>
         ))}
-
       </div>
-
-      {/* Footer */}
-      <div className="text-center text-sm text-gray-500 pt-8">
-        © 2026 Chillify. All rights reserved.
-      </div>
-
     </div>
   );
 };
