@@ -21,7 +21,7 @@ const Home = () => {
               </h2>
               <button
                 className="text-primary text-sm font-semibold hover:underline cursor-pointer"
-                onClick={() => navigate(`/section/:${section.id}`)}
+                onClick={() => navigate(`/section/${section.id}`)}
               >
                 Show all
               </button>

@@ -25,7 +25,7 @@ function App() {
       {/* Main routes */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />}></Route>
-        <Route path="/section/:id" element={<SectionDetail />}></Route>
+        <Route path="/section/:sectionId" element={<SectionDetail />}></Route>
 
         <Route path="/account" element={<Account />}></Route>
         <Route path="/account/profile" element={<Profile />}></Route>
