@@ -129,48 +129,55 @@ export const playlists: Playlist[] = [
     name: "Midnight Lo-Fi",
     description:
       "Relaxing beats for late night coding sessions, deep focus, and midnight rainy vibes.",
-    cover: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+    cover:
+      "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=200&q=80",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "summer",
     name: "Summer Hits 2024",
-    cover: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    cover:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=200&q=80",
     description: "Hot tracks for the summer season.",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "chill",
     name: "Late Night Chill",
-    cover: "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+    cover:
+      "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=200&q=80",
     description: "Relaxing beats for night sessions.",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "workout",
     name: "Workout Energy",
-    cover: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429",
+    cover:
+      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=200&q=80",
     description: "High energy tracks to boost performance.",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "roadtrip",
     name: "Road Trip Mix",
-    cover: "https://images.unsplash.com/photo-1492724441997-5dc865305da7",
+    cover:
+      "https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=200&q=80",
     description: "Perfect soundtrack for long drives.",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "indie",
     name: "Indie Discoveries",
-    cover: "https://images.unsplash.com/photo-1487215078519-e21cc028cb29",
+    cover:
+      "https://images.unsplash.com/photo-1487215078519-e21cc028cb29?w=200&q=80",
     description: "Fresh indie music selections.",
     songs: trendingSongs.slice(0, 5),
   },
   {
     id: "classic",
     name: "Classic Rock Essential",
-    cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745",
+    cover:
+      "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&q=80",
     description: "Legendary rock anthems.",
     songs: trendingSongs.slice(0, 5),
   },
