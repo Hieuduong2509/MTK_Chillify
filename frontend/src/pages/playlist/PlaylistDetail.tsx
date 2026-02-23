@@ -106,8 +106,8 @@ const PlaylistDetail = () => {
             key={song.id}
             onClick={() => handlePlaySong(song)}
             className="grid grid-cols-[auto_1fr_auto]
-  md:grid-cols-[auto_1fr_1fr_auto]
-  lg:grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 px-4 py-3 items-center rounded-lg hover:bg-white/5 group transition cursor-pointer"
+          md:grid-cols-[auto_1fr_1fr_auto]
+          lg:grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 px-4 py-3 items-center rounded-lg hover:bg-white/5 group transition cursor-pointer"
           >
             {/* Number / Play */}
             <div className="w-8 text-center text-gray-500 text-sm group-hover:hidden">
