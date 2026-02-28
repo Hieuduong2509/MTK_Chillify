@@ -5,6 +5,7 @@ The "main" branch would be the final.
 The "backend" serves for BE.
 The "frontend" serves for FE.
 Will updating the structure for BE soon.
+Update 28/2/2026
 
 
 Hieu:
