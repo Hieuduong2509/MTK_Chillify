@@ -6,7 +6,7 @@ The "backend" serves for BE.
 The "frontend" serves for FE.
 Will updating the structure for BE soon.
 Update 28/2/2026
-
+Update 6/3/2026
 
 Hieu:
 This is my README 
