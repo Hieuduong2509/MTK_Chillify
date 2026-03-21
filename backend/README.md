@@ -4,9 +4,9 @@
 
 Chillify is a web-based music player backend built with **ASP.NET Core (.NET 9)** following a layered architecture:
 
-* **API Layer** → Controllers, DTOs, middleware
-* **Application Layer** → Business logic, interfaces, design patterns
-* **Infrastructure Layer** → Database access, external services
+- **API Layer** → Controllers, DTOs, middleware
+- **Application Layer** → Business logic, interfaces, design patterns
+- **Infrastructure Layer** → Database access, external services
 
 This project is structured for **scalability, maintainability, and clean architecture principles**.
 
@@ -16,19 +16,19 @@ This project is structured for **scalability, maintainability, and clean archite
 
 ### Completed
 
-* ASP.NET Core Web API setup
-* PostgreSQL connection via Entity Framework Core
-* Health check endpoint (`/health`)
-* Swagger API documentation
-* CORS configuration
-* Clean project structure (API / Application / Infrastructure)
+- ASP.NET Core Web API setup
+- PostgreSQL connection via Entity Framework Core
+- Health check endpoint (`/health`)
+- Swagger API documentation
+- CORS configuration
+- Clean project structure (API / Application / Infrastructure)
 
 ### Verified
 
-* Application builds successfully
-* Server runs correctly
-* Swagger UI accessible
-* Database connection **confirmed working**
+- Application builds successfully
+- Server runs correctly
+- Swagger UI accessible
+- Database connection **confirmed working**
 
 ```http
 GET /health → Healthy
@@ -45,7 +45,7 @@ backend/
 │   ├── controllers/
 │   │   ├── AuthController.cs
 │   │   ├── UserController.cs
-│   │   ├── SongController.cs         
+│   │   ├── SongController.cs
 │   │   ├── PlayerController.cs
 │   │   └── PlaylistController.cs
 │   │
@@ -67,9 +67,9 @@ backend/
 ├── application/
 │   ├── application.csproj
 │   ├── services/			# Logic chính của từng feature
-│   │   ├── AuthService.cs		
-│   │   ├── UserService.cs             
-│   │   ├── SongService.cs             
+│   │   ├── AuthService.cs
+│   │   ├── UserService.cs
+│   │   ├── SongService.cs
 │   │   ├── PlayerService.cs		# Tăng playCount, lịch sử nghe
 │   │   └── PlaylistService.cs
 │   │
@@ -82,18 +82,18 @@ backend/
 │   │   │   └── IPlaylistService.cs
 │   │   │
 │   │   └── Repositories/		# Interface cho data layer
-│   │       ├── IUserRepository.cs	
+│   │       ├── IUserRepository.cs
 │   │       ├── ISongRepository.cs
 │   │       ├── IPlaylistRepository.cs
 │   │       └── IPlayHistoryRepository.cs
 │   │
 │   ├── models/				# 1 model <=> 1 table trong DB
 │   │   ├── User.cs
-│   │   ├── Song.cs                   
+│   │   ├── Song.cs
 │   │   ├── Playlist.cs
-│   │   ├── PlaylistSong.cs          
-│   │   └── SongPlayHistory.cs        
-│   │   
+│   │   ├── PlaylistSong.cs
+│   │   └── SongPlayHistory.cs
+│   │
 │   └── patterns/
 │       ├── section/                   # Factory Method + Strategy Pattern
 │       │   ├── ISectionStrategy.cs
@@ -106,13 +106,13 @@ backend/
 │           ├── IPlayerObserver.cs
 │           └── AnalyticsObserver.cs
 │
-├── infrastructure/	# Tầng làm việc với thế giới bên ngoài 
+├── infrastructure/	# Tầng làm việc với thế giới bên ngoài
 │   ├──infrastructure.csproj
 │   ├── Repositories/	# Giao tiếp trực tiếp với database (implment interface)
 │   │   ├── UserRepository.cs
-│   │   ├── SongRepository.cs         
+│   │   ├── SongRepository.cs
 │   │   ├── PlaylistRepository.cs
-│   │   └── PlayHistoryRepository.cs  
+│   │   └── PlayHistoryRepository.cs
 │   │
 │   ├── Persistence/		# Quản lý connection DB
 │   │   └── AppDbContext.cs
@@ -132,9 +132,9 @@ backend/
 
 ### 1. Prerequisites
 
-* .NET SDK 9.0+
-* PostgreSQL (pgAdmin recommended)
-* Visual Studio Code
+- .NET SDK 9.0+
+- PostgreSQL (pgAdmin recommended)
+- Visual Studio Code
 
 ---
 
@@ -173,6 +173,7 @@ Inside:
 
 ```
 api/appsettings.json
+api/appsettings.Development.json
 ```
 
 ```json
@@ -185,7 +186,13 @@ api/appsettings.json
 
 ---
 
-### 5. Install Dependencies
+### 5. Create Database
+
+Open PostgreSQL pgAdmin and create a new database with the name "chillify_db"
+
+---
+
+### 6. Install Dependencies
 
 ```bash
 dotnet restore
@@ -193,7 +200,7 @@ dotnet restore
 
 ---
 
-### 6. Run Application
+### 7. Run Application
 
 ```bash
 cd api
@@ -249,9 +256,9 @@ This follows **Clean Architecture terminology**:
 
 ### Benefits:
 
-* Decouples business logic from EF Core
-* Allows future replacement (e.g., Dapper, MongoDB)
-* Improves architectural clarity
+- Decouples business logic from EF Core
+- Allows future replacement (e.g., Dapper, MongoDB)
+- Improves architectural clarity
 
 ---
 
@@ -259,9 +266,9 @@ This follows **Clean Architecture terminology**:
 
 ### `.env`
 
-* Contains **real environment variables**
-* Used at runtime
-* **Must NOT be committed** (sensitive data)
+- Contains **real environment variables**
+- Used at runtime
+- **Must NOT be committed** (sensitive data)
 
 Example:
 
@@ -273,9 +280,9 @@ DB_PASSWORD=chillify
 
 ### `.env.example`
 
-* Template for developers
-* No sensitive data
-* Helps onboarding
+- Template for developers
+- No sensitive data
+- Helps onboarding
 
 Example:
 
@@ -289,8 +296,8 @@ DB_PASSWORD=your_password_here
 
 These folders:
 
-* Are automatically generated by .NET
-* Contain compiled binaries and temporary files
+- Are automatically generated by .NET
+- Contain compiled binaries and temporary files
 
 ### Best Practice
 
@@ -312,24 +319,24 @@ obj/
 
 ## Notes
 
-* The backend is currently in **infrastructure-ready state**
-* Database connection is fully verified
-* Business logic (services, repositories) will be implemented next
+- The backend is currently in **infrastructure-ready state**
+- Database connection is fully verified
+- Business logic (services, repositories) will be implemented next
 
 ---
 
 ## Next Steps
 
-* Implement Repository Layer
-* Implement Service Layer
-* Add CRUD APIs
-* Add Authentication (JWT)
-* Integrate external music API (Jamendo)
+- Implement Repository Layer
+- Implement Service Layer
+- Add CRUD APIs
+- Add Authentication (JWT)
+- Integrate external music API (Jamendo)
 
 ---
 
 ## Summary
 
-* Backend architecture is correctly structured
-* Database connection is stable and verified
-* System is ready for feature development phase
+- Backend architecture is correctly structured
+- Database connection is stable and verified
+- System is ready for feature development phase
