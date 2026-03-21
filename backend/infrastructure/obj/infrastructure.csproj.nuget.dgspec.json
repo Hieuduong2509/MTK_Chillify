@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\PC - NGHI\\Desktop\\backend\\infrastructure\\infrastructure.csproj": {}
+    "C:\\Users\\PC - NGHI\\Desktop\\New folder\\chillify\\backend\\infrastructure\\infrastructure.csproj": {}
   },
   "projects": {
-    "C:\\Users\\PC - NGHI\\Desktop\\backend\\application\\application.csproj": {
+    "C:\\Users\\PC - NGHI\\Desktop\\New folder\\chillify\\backend\\application\\application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\PC - NGHI\\Desktop\\backend\\application\\application.csproj",
+        "projectUniqueName": "C:\\Users\\PC - NGHI\\Desktop\\New folder\\chillify\\backend\\application\\application.csproj",
         "projectName": "application",
-        "projectPath": "C:\\Users\\PC - NGHI\\Desktop\\backend\\application\\application.csproj",
+        "projectPath": "C:\\Users\\PC - NGHI\\Desktop\\New folder\\chillify\\backend\\application\\application.csproj",
         "packagesPath": "C:\\Users\\PC - NGHI\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\PC - NGHI\\Desktop\\backend\\application\\obj\\",
+        "outputPath": "C:\\Users\\PC - NGHI\\Desktop\\New folder\\chillify\\backend\\application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -69,14 +69,14 @@
         }
       }
     },
-    "C:\\Users\\PC - NGHI\\Desktop\\backend\\infrastructure\\infrastructure.csproj": {
+    "C:\\Users\\PC - NGHI\\Desktop\\New folder\\chillify\\backend\\infrastructure\\infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\PC - NGHI\\Desktop\\backend\\infrastructure\\infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\PC - NGHI\\Desktop\\New folder\\chillify\\backend\\infrastructure\\infrastructure.csproj",
         "projectName": "infrastructure",
-        "projectPath": "C:\\Users\\PC - NGHI\\Desktop\\backend\\infrastructure\\infrastructure.csproj",
+        "projectPath": "C:\\Users\\PC - NGHI\\Desktop\\New folder\\chillify\\backend\\infrastructure\\infrastructure.csproj",
         "packagesPath": "C:\\Users\\PC - NGHI\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\PC - NGHI\\Desktop\\backend\\infrastructure\\obj\\",
+        "outputPath": "C:\\Users\\PC - NGHI\\Desktop\\New folder\\chillify\\backend\\infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -97,8 +97,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\PC - NGHI\\Desktop\\backend\\application\\application.csproj": {
-                "projectPath": "C:\\Users\\PC - NGHI\\Desktop\\backend\\application\\application.csproj"
+              "C:\\Users\\PC - NGHI\\Desktop\\New folder\\chillify\\backend\\application\\application.csproj": {
+                "projectPath": "C:\\Users\\PC - NGHI\\Desktop\\New folder\\chillify\\backend\\application\\application.csproj"
               }
             }
           }
@@ -118,6 +118,16 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
