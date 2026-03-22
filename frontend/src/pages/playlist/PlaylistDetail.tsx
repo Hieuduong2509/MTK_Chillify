@@ -1,8 +1,15 @@
 import { useParams } from "react-router-dom";
 import { playlists } from "../../assets/dummyDB";
 import { player } from "../../core/player/Player";
+import { useEffect, useState } from "react";
+import DropdownMenu from "../../components/common/DropdownMenu";
 
 const PlaylistDetail = () => {
+  const [openMenu, setOpenMenu] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [mode, setMode] = useState<"create" | "edit">("create");
+  const [openSongMenu, setOpenSongMenu] = useState<number | null>(null);
+
   const { id } = useParams<{ id: string }>();
 
   const playlist = playlists.find((p) => p.id === id);
@@ -79,9 +86,38 @@ const PlaylistDetail = () => {
           </span>
         </button>
 
-        <button className="text-gray-400 hover:text-primary transition cursor-pointer">
-          <span className="material-symbols-outlined text-3xl">more_horiz</span>
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setOpenMenu(!openMenu)}
+            className="text-gray-400 hover:text-primary transition cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-3xl">
+              more_horiz
+            </span>
+          </button>
+
+          {openMenu && (
+            <DropdownMenu
+              className="left-5 top-full"
+              items={[
+                {
+                  label: "Edit details",
+                  icon: "edit",
+                  onClick: () => {
+                    setMode("edit");
+                    setIsOpenModal(true);
+                  },
+                },
+                {
+                  label: "Delete playlist",
+                  icon: "delete",
+                  variant: "danger",
+                  onClick: () => console.log("Delete"),
+                },
+              ]}
+            />
+          )}
+        </div>
       </section>
 
       {/* TABLE HEADER */}
@@ -92,11 +128,12 @@ const PlaylistDetail = () => {
       >
         <div className="w-8 text-center">#</div>
         <div>Title</div>
-        <div className="hidden md:block">Album</div>
+        {/* <div className="hidden md:block">Album</div> */}
         <div className="hidden lg:block">Date Added</div>
-        <div className="w-16 text-right">
+        <div className="hidden lg:block w-16 text-right">
           <span className="material-symbols-outlined text-sm">schedule</span>
         </div>
+        <div className="w-10">Actions</div>
       </div>
 
       {/* SONG LIST */}
@@ -138,9 +175,9 @@ const PlaylistDetail = () => {
             </div>
 
             {/* Album */}
-            <div className="hidden md:block text-gray-400 text-sm truncate">
+            {/* <div className="hidden md:block text-gray-400 text-sm truncate">
               —
-            </div>
+            </div> */}
 
             {/* Date */}
             <div className="hidden lg:block text-gray-400 text-sm truncate">
@@ -148,7 +185,42 @@ const PlaylistDetail = () => {
             </div>
 
             {/* Duration */}
-            <div className="w-16 text-right text-gray-400 text-sm">3:45</div>
+            <div className="hidden lg:block w-16 text-right text-gray-400 text-sm">
+              3:45
+            </div>
+
+            {/* Action menu */}
+            <div className="relative flex justify-end">
+              <button
+                onClick={() =>
+                  setOpenSongMenu(openSongMenu === song.id ? null : song.id)
+                }
+                className="transition text-gray-400 hover:text-white cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-xl">
+                  more_horiz
+                </span>
+              </button>
+
+              {openSongMenu === song.id && (
+                <DropdownMenu
+                  className="right-0 top-full mt-2"
+                  items={[
+                    {
+                      label: "Add to other playlist",
+                      icon: "playlist_add",
+                      onClick: () => alert("Added"),
+                    },
+                    {
+                      label: "Remove from this playlist",
+                      icon: "delete",
+                      variant: "danger",
+                      onClick: () => alert("Delete"),
+                    },
+                  ]}
+                />
+              )}
+            </div>
           </div>
         ))}
       </div>

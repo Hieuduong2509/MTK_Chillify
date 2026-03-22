@@ -3,6 +3,7 @@ import type { Song } from "../../assets/dummyDB";
 import { useState } from "react";
 import { playlists } from "../../assets/dummyDB";
 import PlaylistModal from "../../components/playlist/PlaylistModal";
+import DropdownMenu from "../../components/common/DropdownMenu";
 
 interface Playlist {
   id: string;
@@ -97,46 +98,30 @@ const MyPlaylist = () => {
                 </span>
 
                 {openMenu === playlist.id && (
-                  <div
-                    className="
-                    absolute right-0 mt-3
-                    w-48
-                    bg-[#1c2733]
-                    border border-white/10
-                    rounded-lg
-                    shadow-xl
-                    py-2
-                    z-50
-                  "
-                  >
-                    <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-300 hover:bg-white/5 cursor-pointer">
-                      <span className="material-symbols-outlined text-sm">
-                        play_arrow
-                      </span>
-                      Play
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setMode("edit");
-                        setSelectedPlaylist(playlist);
-                        setIsOpenModal(true);
-                      }}
-                      className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-300 hover:bg-white/5 cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-sm">
-                        edit
-                      </span>
-                      Edit details
-                    </button>
-
-                    <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-red-400 hover:bg-white/5 cursor-pointer">
-                      <span className="material-symbols-outlined text-sm">
-                        delete
-                      </span>
-                      Delete playlist
-                    </button>
-                  </div>
+                  <DropdownMenu
+                    items={[
+                      {
+                        label: "Play",
+                        icon: "play_arrow",
+                        onClick: () => alert("Play"),
+                      },
+                      {
+                        label: "Edit details",
+                        icon: "edit",
+                        onClick: () => {
+                          setMode("edit");
+                          setSelectedPlaylist(playlist);
+                          setIsOpenModal(true);
+                        },
+                      },
+                      {
+                        label: "Delete playlist",
+                        icon: "delete",
+                        variant: "danger",
+                        onClick: () => alert("Deleted"),
+                      },
+                    ]}
+                  />
                 )}
               </div>
             </div>

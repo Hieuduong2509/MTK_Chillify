@@ -1,9 +1,12 @@
 import { useParams } from "react-router-dom";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { trendingSongs } from "../../assets/dummyDB";
 import { player } from "../../core/player/Player";
+import DropdownMenu from "../../components/common/DropdownMenu";
 
 const SongDetail = () => {
+  const [openMenu, setOpenMenu] = useState(false);
+
   const { id } = useParams<{ id: string }>();
 
   const song = useMemo(
@@ -88,11 +91,34 @@ const SongDetail = () => {
             </button>
 
             {/* More */}
-            <button className="flex h-12 w-12 items-center justify-center rounded-full text-gray-400 hover:text-primary transition cursor-pointer">
-              <span className="material-symbols-outlined text-2xl">
-                more_horiz
-              </span>
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setOpenMenu(!openMenu)}
+                className="flex h-12 w-12 items-center justify-center rounded-full text-gray-400 hover:text-primary transition cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-2xl">
+                  more_horiz
+                </span>
+              </button>
+              {openMenu && (
+                <DropdownMenu
+                  className="left-5 top-full"
+                  items={[
+                    {
+                      label: "Add to other playlist",
+                      icon: "playlist_add",
+                      onClick: () => alert("Added"),
+                    },
+                    {
+                      label: "Remove from this playlist",
+                      icon: "delete",
+                      variant: "danger",
+                      onClick: () => alert("Delete"),
+                    },
+                  ]}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
