@@ -334,6 +334,23 @@ obj/
 - Integrate external music API (Jamendo)
 
 ---
+# Libraries & Packages
+1. API Documentation (Swagger)
+Bash
+dotnet add package Swashbuckle.AspNetCore --version 6.5.0
+dotnet add package Microsoft.OpenApi --version 2.4.1
+2. Database & Entity Framework (PostgreSQL)
+Bash
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+dotnet add package EFCore.NamingConventions
+3. Authentication & Security
+Bash
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+dotnet add package System.IdentityModel.Tokens.Jwt
+dotnet add package BCrypt.Net-Next
+4. Configuration
+Bash
+dotnet add package Microsoft.Extensions.Configuration.Abstractions --version 9.0.0
 
 ## Summary
 

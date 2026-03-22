@@ -48,3 +48,9 @@ testem.log
 .DS_Store
 Thumbs.db
 /api/obj
+
+## Configuration files 
+api/appsettings.json
+api/appsettings.Development.json
+*.env
+connect.lock
