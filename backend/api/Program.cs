@@ -1,7 +1,19 @@
+using application.interfaces.Repositories;
+using application.interfaces.Services;
+using Chillify.Application.Services;
 using Chillify.Infrastructure.Persistence;
+using Chillify.Infrastructure.Repositories;
+using infrastructure.ExternalServices;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Application services
+builder.Services.AddScoped<ISongService, SongService>();
+
+// Infrastructure services
+builder.Services.AddScoped<ISongRepository, SongRepository>();
+builder.Services.AddHttpClient<IJamendoService, JamendoService>();
 
 // 1. Controllers
 builder.Services.AddControllers();

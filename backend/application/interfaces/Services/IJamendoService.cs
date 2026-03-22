@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using application.DTOs.Song;
-using application.models;
+using application.models.jamendo;
 
 namespace application.interfaces.Services
 {
-    public interface ISongService
+    public interface IJamendoService
     {
-       Task<List<SongResponseDto>> GetSongsTrending();
+        Task<List<JamendoTrack>> GetSongsAsync();
+        
     }
 }
