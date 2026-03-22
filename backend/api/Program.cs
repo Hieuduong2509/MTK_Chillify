@@ -1,20 +1,43 @@
 using Chillify.Infrastructure.Persistence;
+using Chillify.Application.Interfaces.Services;
+using Chillify.Application.Interfaces.Repositories;
+using Chillify.Application.Services;
+using Chillify.Infrastructure.Repositories;
+
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ======================
 // 1. Controllers
+// ======================
 builder.Services.AddControllers();
 
+// ======================
 // 2. DbContext (PostgreSQL)
+// ======================
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 3. Swagger
+// ======================
+// 3. Dependency Injection (QUAN TRỌNG NHẤT)
+// ======================
+builder.Services.AddScoped<IPlaylistService, PlaylistService>();
+builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+
+builder.Services.AddScoped<ISongRepository, SongRepository>();
+
+// (Nếu bạn có PlayerService / AuthService sau này thì add ở đây)
+
+// ======================
+// 4. Swagger
+// ======================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 4. CORS
+// ======================
+// 5. CORS
+// ======================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -25,13 +48,17 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 5. Health Check (PostgreSQL)
+// ======================
+// 6. Health Check
+// ======================
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!);
 
 var app = builder.Build();
 
+// ======================
 // Middleware pipeline
+// ======================
 
 // Swagger
 if (app.Environment.IsDevelopment())
