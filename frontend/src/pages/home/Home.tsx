@@ -1,7 +1,6 @@
 import { useMediaQuery } from "react-responsive";
 import { homeSections } from "../../assets/assets";
-import ProgressBar from "../../components/ProgressBar";
-import SongCard from "../../components/SongCard";
+import SongCard from "../../components/song/SongCard";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {

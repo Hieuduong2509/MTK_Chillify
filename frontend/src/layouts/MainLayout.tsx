@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Header from "../components/Header";
-import Sidebar from "../components/Sidebar";
+import Header from "../components/common/Header";
+import Sidebar from "../components/common/Sidebar";
 import { Outlet } from "react-router-dom";
-import Footer from "../components/Footer";
-import ProgressBar from "../components/ProgressBar";
+import Footer from "../components/common/Footer";
+import ProgressBar from "../components/common/ProgressBar";
 import { player } from "../core/player/Player";
 
 const MainLayout = () => {

@@ -1,4 +1,4 @@
-import { assets, menuItems } from "../assets/assets";
+import { assets, menuItems } from "../../assets/assets";
 import SidebarItem from "./SidebarItem";
 
 interface SidebarProps {

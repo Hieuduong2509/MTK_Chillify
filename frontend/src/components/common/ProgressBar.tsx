@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { player } from "../core/player/Player";
-import type { PlayerObserver } from "../core/player/PlayerObserver";
-import type { Song } from "../assets/dummyDB";
+import { player } from "../../core/player/Player";
+import type { PlayerObserver } from "../../core/player/PlayerObserver";
+import type { Song } from "../../assets/dummyDB";
 
 const ProgressBar = () => {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);

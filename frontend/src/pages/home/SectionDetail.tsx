@@ -1,7 +1,6 @@
-import React from "react";
 import { useParams } from "react-router-dom";
 import { homeSections } from "../../assets/assets";
-import SongCard from "../../components/SongCard";
+import SongCard from "../../components/song/SongCard";
 
 const SectionDetail = () => {
   const { sectionId } = useParams();
