@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom";
 import type { Song } from "../../assets/dummyDB";
-import { trendingSongs } from "../../assets/dummyDB";
 import { useState } from "react";
 import { playlists } from "../../assets/dummyDB";
-import AddPlaylistModal from "../../components/playlist/AddPlaylistModal";
+import PlaylistModal from "../../components/playlist/PlaylistModal";
 
 interface Playlist {
   id: string;
@@ -15,6 +14,8 @@ interface Playlist {
 const MyPlaylist = () => {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [mode, setMode] = useState<"create" | "edit">("create");
+  const [selectedPlaylist, setSelectedPlaylist] = useState<any>(null);
 
   return (
     <>
@@ -35,7 +36,11 @@ const MyPlaylist = () => {
             transition-all duration-300
             cursor-pointer
           "
-            onClick={() => setIsOpenModal(true)}
+            onClick={() => {
+              setMode("create");
+              setSelectedPlaylist(null);
+              setIsOpenModal(true);
+            }}
           >
             <span className="material-symbols-outlined text-sm">add</span>
             Add new playlist
@@ -111,7 +116,14 @@ const MyPlaylist = () => {
                       Play
                     </button>
 
-                    <button className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-300 hover:bg-white/5 cursor-pointer">
+                    <button
+                      onClick={() => {
+                        setMode("edit");
+                        setSelectedPlaylist(playlist);
+                        setIsOpenModal(true);
+                      }}
+                      className="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-300 hover:bg-white/5 cursor-pointer"
+                    >
                       <span className="material-symbols-outlined text-sm">
                         edit
                       </span>
@@ -132,9 +144,23 @@ const MyPlaylist = () => {
         </div>
       </div>
 
-      <AddPlaylistModal
+      {/* <AddPlaylistModal
         isOpen={isOpenModal}
         onClose={() => setIsOpenModal(false)}
+      /> */}
+
+      <PlaylistModal
+        isOpen={isOpenModal}
+        mode={mode}
+        initialData={selectedPlaylist}
+        onClose={() => setIsOpenModal(false)}
+        onSubmit={(data) => {
+          if (mode === "create") {
+            console.log("CREATE", data);
+          } else {
+            console.log("UPDATE", data);
+          }
+        }}
       />
     </>
   );
