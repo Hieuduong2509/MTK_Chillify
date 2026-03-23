@@ -10,5 +10,7 @@ namespace application.interfaces.Services
     public interface ISongService
     {
        Task<List<SongResponseDto>> GetSongsTrending();
+       Task<List<SongResponseDto>> AddSongs();
+       Task<List<SongResponseDto>> ExistsSong();
     }
 }

@@ -32,4 +32,32 @@ public class SongController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    [HttpPost("add")]
+    public async Task<IActionResult> AddSongs()
+    {
+        try
+        {
+            var result = await _songService.AddSongs();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("exists")]
+    public async Task<IActionResult> ExistsSong()
+    {
+        try
+        {
+            var result = await _songService.ExistsSong();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }

@@ -9,6 +9,5 @@ namespace application.interfaces.Services
     public interface IJamendoService
     {
         Task<List<JamendoTrack>> GetSongsAsync();
-        
     }
 }

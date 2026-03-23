@@ -8,6 +8,9 @@ namespace application.interfaces.Repositories
 {
     public interface ISongRepository
     {
-       
+        Task AddAsync(Song song);
+        Task AddRangeAsync(List<Song> songs);
+        Task SaveChangesAsync();
+        Task<bool> ExistsByJamendoIdAsync(string jamendoTrackId);
     }
 }
