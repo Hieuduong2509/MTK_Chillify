@@ -23,7 +23,7 @@ public class SongController : ControllerBase
         try
         {
             var response = await _songService.GetSongs();
-            return Ok(response); //  response là DTO trả về
+            return Ok(response); 
         }
         catch (Exception ex)
         {

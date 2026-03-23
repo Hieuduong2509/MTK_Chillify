@@ -3,6 +3,7 @@ using application.DTOs.Song;
 using application.interfaces.Repositories;
 using application.mappers;
 using application.models.jamendo;
+using application.models;
 
 namespace Chillify.Application.Services;
 
@@ -18,12 +19,34 @@ public class SongService : ISongService
 
     public async Task<List<SongResponseDto>> GetSongs()
     {
-        // var songFromApi = await _jamendoService.GetSongsAsync();
+        var songsFromApi = await _jamendoService.GetSongsAsync();
         // TODO: Hiện thực kiểm tra DB, update DB, lấy bài nhạc từ DB và trả về => Gọi repo
 
-
         // return songFromApi.Select(song => song.ToSongDtoFromJamendoTrack()).ToList();
-        throw new NotImplementedException();
+        // throw new NotImplementedException();
+
+        var songsToAdd = new List<Song>();
+
+        foreach(var track in songsFromApi)
+        {
+            var exists = await _songRepository.ExistsByJamendoIdAsync(track.Id);
+
+            if (!exists)
+            {
+                var songModel = track.ToSongFromJamendoTrack();
+                songsToAdd.Add(songModel);
+            }
+        }
+
+        if (songsToAdd.Any())
+        {
+            await _songRepository.AddRangeAsync(songsToAdd);
+            await _songRepository.SaveChangesAsync();
+        }
+
+        return songsFromApi
+            .Select(song => song.ToSongDtoFromJamendoTrack())
+            .ToList();
     }
 
     public async Task<List<SongResponseDto>> AddSongs()
