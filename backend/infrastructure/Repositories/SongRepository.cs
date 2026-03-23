@@ -44,4 +44,12 @@ public class SongRepository : ISongRepository
             .Take(limit)
             .ToListAsync();
     }
+
+    public async Task<List<Song>> GetSongNewAsync(int limit)
+    {
+        return await _context.Songs
+            .OrderByDescending(s => s.ReleaseDate)
+            .Take(limit)
+            .ToListAsync();
+    }
 }

@@ -74,4 +74,18 @@ public class SongController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    [HttpGet("new")]
+    public async Task<IActionResult> GetSongNew()
+    {
+        try
+        {
+            var result = await _songService.GetSongNew();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }
