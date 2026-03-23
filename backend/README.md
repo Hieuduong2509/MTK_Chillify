@@ -696,6 +696,10 @@ dotnet add package BCrypt.Net-Next
 ```
 dotnet add package Microsoft.Extensions.Configuration.Abstractions --version 9.0.0
 ```
+5. Health Checks
+```
+dotnet add package AspNetCore.HealthChecks.NpgSql
+```
 ## Summary
 
 - Backend architecture is correctly structured
