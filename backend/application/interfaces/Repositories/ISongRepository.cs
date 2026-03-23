@@ -12,5 +12,6 @@ namespace application.interfaces.Repositories
         Task AddRangeAsync(List<Song> songs);
         Task SaveChangesAsync();
         Task<bool> ExistsByJamendoIdAsync(string jamendoTrackId);
+        Task<List<Song>> GetSongDiscoverAsync(int limit);
     }
 }

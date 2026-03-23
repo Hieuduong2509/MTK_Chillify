@@ -12,5 +12,6 @@ namespace application.interfaces.Services
        Task<List<SongResponseDto>> GetSongsTrending();
        Task<List<SongResponseDto>> AddSongs();
        Task<List<SongResponseDto>> ExistsSong();
+       Task<List<SongResponseDto>> GetSongDiscover();
     }
 }

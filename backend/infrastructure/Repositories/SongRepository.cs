@@ -36,4 +36,12 @@ public class SongRepository : ISongRepository
     {
         return await _context.Songs.AnyAsync(s => s.JamendoTrackId == jamendoTrackId);
     }
+
+    public async Task<List<Song>> GetSongDiscoverAsync(int limit)
+    {
+        return await _context.Songs
+            .OrderBy(s => Guid.NewGuid()) 
+            .Take(limit)
+            .ToListAsync();
+    }
 }

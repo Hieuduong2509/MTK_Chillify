@@ -95,4 +95,15 @@ public class SongService : ISongService
 
         return new List<SongResponseDto>();
     }
+
+    public async Task<List<SongResponseDto>> GetSongDiscover()
+    {
+        var songs = await _songRepository.GetSongDiscoverAsync(10);
+
+        var result = songs
+            .Select(song => song.ToSongDtoFromSongModel())
+            .ToList();
+
+        return result;
+    }
 }
