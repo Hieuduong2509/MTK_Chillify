@@ -3,7 +3,7 @@ using Chillify.Application.Models;
 
 namespace Chillify.Infrastructure.Persistence
 {
-    public class AppDbContext : Microsoft.EntityFrameworkCore.DbContext
+    public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
@@ -26,6 +26,7 @@ namespace Chillify.Infrastructure.Persistence
             modelBuilder.Entity<PlaylistSong>().ToTable("playlist_songs");
             modelBuilder.Entity<SongPlayHistory>().ToTable("song_play_history");
 
+            // Unique constraints
             modelBuilder.Entity<PlaylistSong>()
                 .HasIndex(ps => new { ps.PlaylistId, ps.SongId })
                 .IsUnique();
@@ -34,6 +35,7 @@ namespace Chillify.Infrastructure.Persistence
                 .HasIndex(ps => new { ps.PlaylistId, ps.Position })
                 .IsUnique();
 
+            // Relationships
             modelBuilder.Entity<Playlist>()
                 .HasOne<User>()
                 .WithMany()
@@ -64,83 +66,5 @@ namespace Chillify.Infrastructure.Persistence
                 .HasForeignKey(sph => sph.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
         }
-
-        // ======================
-        // SEED DATA
-        // ======================
-        public async Task SeedAsync()
-{
-    if (await Songs.AnyAsync()) return;
-
-    var artistId = Guid.NewGuid();
-    var albumId = Guid.NewGuid();
-
-    var songs = new List<Song>
-    {
-        new Song
-        {
-            SongId = Guid.NewGuid(),
-            Name = "Chill Vibes 1",
-            AudioUrl = "https://example.com/audio1.mp3",
-            Duration = 240,
-            ReleaseDate = DateTime.SpecifyKind(new DateTime(2020, 1, 1), DateTimeKind.Utc),
-            PlayCount = 0,
-            ArtistId = artistId,
-            AlbumId = albumId,
-            CreatedAt = DateTime.UtcNow
-        },
-        new Song
-        {
-            SongId = Guid.NewGuid(),
-            Name = "Chill Vibes 2",
-            AudioUrl = "https://example.com/audio2.mp3",
-            Duration = 260,
-            ReleaseDate = DateTime.SpecifyKind(new DateTime(2021, 1, 1), DateTimeKind.Utc),
-            PlayCount = 0,
-            ArtistId = artistId,
-            AlbumId = albumId,
-            CreatedAt = DateTime.UtcNow
-        },
-        new Song
-        {
-            SongId = Guid.NewGuid(),
-            Name = "Lo-fi Night",
-            AudioUrl = "https://example.com/audio3.mp3",
-            Duration = 230,
-            ReleaseDate = DateTime.SpecifyKind(new DateTime(2019, 1, 1), DateTimeKind.Utc),
-            PlayCount = 0,
-            ArtistId = artistId,
-            AlbumId = albumId,
-            CreatedAt = DateTime.UtcNow
-        },
-        new Song
-        {
-            SongId = Guid.NewGuid(),
-            Name = "Deep Focus",
-            AudioUrl = "https://example.com/audio4.mp3",
-            Duration = 300,
-            ReleaseDate = DateTime.SpecifyKind(new DateTime(2022, 1, 1), DateTimeKind.Utc),
-            PlayCount = 0,
-            ArtistId = artistId,
-            AlbumId = albumId,
-            CreatedAt = DateTime.UtcNow
-        },
-        new Song
-        {
-            SongId = Guid.NewGuid(),
-            Name = "Late Night Coding",
-            AudioUrl = "https://example.com/audio5.mp3",
-            Duration = 270,
-            ReleaseDate = DateTime.SpecifyKind(new DateTime(2020, 6, 1), DateTimeKind.Utc),
-            PlayCount = 0,
-            ArtistId = artistId,
-            AlbumId = albumId,
-            CreatedAt = DateTime.UtcNow
-        }
-    };
-
-    await Songs.AddRangeAsync(songs);
-    await SaveChangesAsync();
-}
     }
 }

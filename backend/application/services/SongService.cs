@@ -14,12 +14,12 @@ public class SongService : ISongService
     }
 
     public async Task<List<Song>> GetRecommendedSongsAsync(Guid songId)
-    {   await Task.Delay(800); 
-        var song = await _songRepository.GetByIdAsync(songId);
+    {
+        var currentSong = await _songRepository.GetByIdAsync(songId);
 
-        if (song == null)
+        if (currentSong == null)
             throw new Exception("Song not found");
 
-        return await _songRepository.GetRecommendedSongsAsync(song);
+        return await _songRepository.GetRecommendedSongsAsync(currentSong);
     }
 }

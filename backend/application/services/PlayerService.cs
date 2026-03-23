@@ -14,7 +14,6 @@ public class PlayerService : IPlayerService
 
     public async Task HandleSongPlayedAsync(Guid songId, Guid? userId)
     {
-        await Task.Delay(300);
         foreach (var observer in _observers)
         {
             await observer.OnSongPlayedAsync(songId, userId);

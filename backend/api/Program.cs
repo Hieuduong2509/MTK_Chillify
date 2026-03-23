@@ -8,20 +8,22 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddControllers();
 
-
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .UseSnakeCaseNamingConvention()
+);
 
-
+// Repositories
 builder.Services.AddScoped<ISongRepository, SongRepository>();
 builder.Services.AddScoped<IPlayHistoryRepository, PlayHistoryRepository>();
 
+// Services
 builder.Services.AddScoped<ISongService, SongService>();
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 
+// Observer
 builder.Services.AddScoped<IPlayerObserver, AnalyticsObserver>();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -54,21 +56,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthChecks("/health");
-
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    try
-    {
-        await db.Database.MigrateAsync();
-        await db.SeedAsync();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine(" Database init error:");
-        Console.WriteLine(ex.Message);
-    }
-}
 
 app.Run();
