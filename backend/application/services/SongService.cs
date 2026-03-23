@@ -133,4 +133,18 @@ public class SongService : ISongService
 
         return result;
     }
+
+    public async Task<SongResponseDto?> GetSongDetail(Guid songId)
+    {
+        var song = await _songRepository.GetSongByIdAsync(songId);
+
+        if (song == null)
+        {
+            return null;
+        }
+
+        var result = song.ToSongDtoFromSongModel();
+
+        return result;
+    }
 }

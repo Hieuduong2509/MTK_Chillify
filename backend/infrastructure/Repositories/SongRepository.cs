@@ -60,4 +60,10 @@ public class SongRepository : ISongRepository
             .Take(limit)
             .ToListAsync();
     }
+
+    public async Task<Song?> GetSongByIdAsync(Guid songId)
+    {
+        return await _context.Songs
+            .FirstOrDefaultAsync(s => s.SongId == songId);
+    }
 }

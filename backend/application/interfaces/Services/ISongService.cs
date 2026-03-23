@@ -15,5 +15,6 @@ namespace application.interfaces.Services
        Task<List<SongResponseDto>> GetSongDiscover();
        Task<List<SongResponseDto>> GetSongNew();
        Task<List<SongResponseDto>> GetSongTrending();
+       Task<SongResponseDto?> GetSongDetail(Guid songId);
     }
 }

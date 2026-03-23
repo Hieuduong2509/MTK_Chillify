@@ -100,4 +100,24 @@ public class SongController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetSongDetail(Guid id)
+    {
+        try
+        {
+            var result = await _songService.GetSongDetail(id);
+
+            if (result == null)
+            {
+                return NotFound(new { message = "Song not found" });
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 }

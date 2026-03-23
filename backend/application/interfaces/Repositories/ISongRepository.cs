@@ -15,6 +15,6 @@ namespace application.interfaces.Repositories
         Task<List<Song>> GetSongDiscoverAsync(int limit);
         Task<List<Song>> GetSongNewAsync(int limit);
         Task<List<Song>> GetSongTrendingAsync(int limit);
-        
+        Task<Song?> GetSongByIdAsync(Guid songId);
     }
 }
