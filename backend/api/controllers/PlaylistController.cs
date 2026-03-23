@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Chillify.Application.Interfaces.Services;
-using Chillify.Api.DTOs.Playlist;
+using Chillify.Application.DTOs.Playlist;
 
 namespace Chillify.Api.Controllers;
 
@@ -25,25 +25,23 @@ public class PlaylistController : ControllerBase
             await _playlistService.AddSongToPlaylistAsync(id, request.SongId);
             return NoContent();
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { message = ex.Message });
         }
     }
 
     [HttpDelete("{playlistId}/songs/{songId}")]
-    public async Task<IActionResult> RemoveSong(
-        Guid playlistId,
-        Guid songId)
+    public async Task<IActionResult> RemoveSong(Guid playlistId, Guid songId)
     {
         try
         {
             await _playlistService.RemoveSongFromPlaylistAsync(playlistId, songId);
             return NoContent();
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { message = ex.Message });
         }
     }
 }

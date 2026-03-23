@@ -1,4 +1,4 @@
-namespace Chillify.Api.DTOs.Playlist;
+namespace Chillify.Application.DTOs.Playlist;
 
 public class AddSongToPlaylistRequestDto
 {

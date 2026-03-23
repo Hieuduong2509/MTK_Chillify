@@ -14,20 +14,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // ======================
-// 2. DbContext (PostgreSQL)
+// 2. DbContext (PostgreSQL + snake_case)
 // ======================
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .UseSnakeCaseNamingConvention()
+);
 
 // ======================
-// 3. Dependency Injection (QUAN TRỌNG NHẤT)
+// 3. Dependency Injection
 // ======================
 builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 
 builder.Services.AddScoped<ISongRepository, SongRepository>();
-
-// (Nếu bạn có PlayerService / AuthService sau này thì add ở đây)
 
 // ======================
 // 4. Swagger
@@ -49,7 +49,7 @@ builder.Services.AddCors(options =>
 });
 
 // ======================
-// 6. Health Check
+// 6. Health Check (FIX)
 // ======================
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!);

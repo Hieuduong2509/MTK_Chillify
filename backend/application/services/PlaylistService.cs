@@ -1,6 +1,5 @@
 using Chillify.Application.Interfaces.Repositories;
 using Chillify.Application.Interfaces.Services;
-using Chillify.Application.Models;
 
 namespace Chillify.Application.Services;
 
@@ -21,15 +20,15 @@ public class PlaylistService : IPlaylistService
     {
         var playlist = await _playlistRepository.GetByIdAsync(playlistId);
         if (playlist is null)
-            throw new Exception("Playlist not found");
+            throw new InvalidOperationException("Playlist not found");
 
         var song = await _songRepository.GetByIdAsync(songId);
         if (song is null)
-            throw new Exception("Song not found");
+            throw new InvalidOperationException("Song not found");
 
         var exists = await _playlistRepository.IsSongInPlaylist(playlistId, songId);
         if (exists)
-            throw new Exception("Song already exists in playlist");
+            throw new InvalidOperationException("Song already exists in playlist");
 
         await _playlistRepository.AddSongToPlaylistAsync(playlistId, songId);
     }
@@ -38,7 +37,7 @@ public class PlaylistService : IPlaylistService
     {
         var exists = await _playlistRepository.IsSongInPlaylist(playlistId, songId);
         if (!exists)
-            throw new Exception("Song not in playlist");
+            throw new InvalidOperationException("Song not in playlist");
 
         await _playlistRepository.RemoveSongFromPlaylistAsync(playlistId, songId);
     }
