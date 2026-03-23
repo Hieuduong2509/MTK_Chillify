@@ -12,9 +12,7 @@ namespace application.interfaces.Services
        Task<List<SongResponseDto>> GetSongs();
        Task<List<SongResponseDto>> AddSongs();
        Task<List<SongResponseDto>> ExistsSong();
-       Task<List<SongResponseDto>> GetSongDiscover();
-       Task<List<SongResponseDto>> GetSongNew();
-       Task<List<SongResponseDto>> GetSongTrending();
        Task<SongResponseDto?> GetSongDetail(Guid songId);
+       Task<List<SongResponseDto>> GetSongsByType(string type);
     }
 }

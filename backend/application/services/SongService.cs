@@ -4,6 +4,7 @@ using application.interfaces.Repositories;
 using application.mappers;
 using application.models.jamendo;
 using application.models;
+using application.patterns.factory;
 
 namespace Chillify.Application.Services;
 
@@ -11,20 +12,18 @@ public class SongService : ISongService
 {
     private readonly ISongRepository _songRepository;
     private readonly IJamendoService _jamendoService;
-    public SongService(ISongRepository songRepository, IJamendoService jamendoService)
+    private readonly SongStrategyFactory _factory;
+    public SongService(ISongRepository songRepository, IJamendoService jamendoService, SongStrategyFactory factory)
     {
         _songRepository = songRepository;
         _jamendoService = jamendoService;
+        _factory = factory;
     }
 
     public async Task<List<SongResponseDto>> GetSongs()
     {
         var songsFromApi = await _jamendoService.GetSongsAsync();
-        // TODO: Hiện thực kiểm tra DB, update DB, lấy bài nhạc từ DB và trả về => Gọi repo
-
-        // return songFromApi.Select(song => song.ToSongDtoFromJamendoTrack()).ToList();
-        // throw new NotImplementedException();
-
+       
         var songsToAdd = new List<Song>();
 
         foreach(var track in songsFromApi)
@@ -119,42 +118,15 @@ public class SongService : ISongService
         return new List<SongResponseDto>();
     }
 
-    public async Task<List<SongResponseDto>> GetSongDiscover()
+    public async Task<List<SongResponseDto>> GetSongsByType(string type)
     {
-        var songs = await _songRepository.GetSongDiscoverAsync(10);
+        var strategy = _factory.Create(type);
 
-        var result = songs
+        var songs = await strategy.GetSongsByStrategy(10);
+
+        return songs
             .Select(song => song.ToSongDtoFromSongModel())
             .ToList();
-
-        return result;
-    }
-
-    public async Task<List<SongResponseDto>> GetSongNew()
-    {
-        var songs = await _songRepository.GetSongNewAsync(10);
-
-        var result = songs
-            .Select(song => song.ToSongDtoFromSongModel())
-            .ToList();
-
-        return result;
-    }
-
-    public async Task<List<SongResponseDto>> GetSongTrending()
-    {
-        var songs = await _songRepository.GetSongTrendingAsync(10);
-
-        if (!songs.Any(s => s.PlayCount > 0))
-        {
-            songs = await _songRepository.GetSongDiscoverAsync(10);
-        }
-
-        var result = songs
-            .Select(song => song.ToSongDtoFromSongModel())
-            .ToList();
-
-        return result;
     }
 
     public async Task<SongResponseDto?> GetSongDetail(Guid songId)

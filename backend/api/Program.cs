@@ -1,5 +1,7 @@
 using application.interfaces.Repositories;
 using application.interfaces.Services;
+using application.patterns.factory;
+using application.patterns.strategy;
 using Chillify.Application.Services;
 using Chillify.Infrastructure.Persistence;
 using Chillify.Infrastructure.Repositories;
@@ -14,6 +16,12 @@ builder.Services.AddScoped<ISongService, SongService>();
 // Infrastructure services
 builder.Services.AddScoped<ISongRepository, SongRepository>();
 builder.Services.AddHttpClient<IJamendoService, JamendoService>();
+
+builder.Services.AddScoped<ISongStrategy, TrendingStrategy>();
+builder.Services.AddScoped<ISongStrategy, NewStrategy>();
+builder.Services.AddScoped<ISongStrategy, DiscoverStrategy>();
+
+builder.Services.AddScoped<SongStrategyFactory>();
 
 // 1. Controllers
 builder.Services.AddControllers();

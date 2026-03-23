@@ -59,48 +59,6 @@ public class SongController : ControllerBase
         }
     }
 
-    [HttpGet("discover")]
-    public async Task<IActionResult> GetSongDiscover()
-    {
-        try
-        {
-            var result = await _songService.GetSongDiscover();
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
-
-    [HttpGet("new")]
-    public async Task<IActionResult> GetSongNew()
-    {
-        try
-        {
-            var result = await _songService.GetSongNew();
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
-
-    [HttpGet("trending")]
-    public async Task<IActionResult> GetSongTrending()
-    {
-        try
-        {
-            var result = await _songService.GetSongTrending();
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetSongDetail(Guid id)
     {
@@ -113,6 +71,20 @@ public class SongController : ControllerBase
                 return NotFound(new { message = "Song not found" });
             }
 
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("song-section")]
+    public async Task<IActionResult> GetSongsByType([FromQuery] string type)
+    {
+        try
+        {
+            var result = await _songService.GetSongsByType(type);
             return Ok(result);
         }
         catch (Exception ex)
