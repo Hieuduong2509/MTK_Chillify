@@ -16,7 +16,7 @@ public class SongService : ISongService
         _jamendoService = jamendoService;
     }
 
-    public async Task<List<SongResponseDto>> GetSongsTrending()
+    public async Task<List<SongResponseDto>> GetSongs()
     {
         // var songFromApi = await _jamendoService.GetSongsAsync();
         // TODO: Hiện thực kiểm tra DB, update DB, lấy bài nhạc từ DB và trả về => Gọi repo
@@ -110,6 +110,22 @@ public class SongService : ISongService
     public async Task<List<SongResponseDto>> GetSongNew()
     {
         var songs = await _songRepository.GetSongNewAsync(10);
+
+        var result = songs
+            .Select(song => song.ToSongDtoFromSongModel())
+            .ToList();
+
+        return result;
+    }
+
+    public async Task<List<SongResponseDto>> GetSongTrending()
+    {
+        var songs = await _songRepository.GetSongTrendingAsync(10);
+
+        if (!songs.Any(s => s.PlayCount > 0))
+        {
+            songs = await _songRepository.GetSongDiscoverAsync(10);
+        }
 
         var result = songs
             .Select(song => song.ToSongDtoFromSongModel())

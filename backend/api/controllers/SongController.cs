@@ -12,19 +12,17 @@ public class SongController : ControllerBase
 {
     private readonly ISongService _songService;
     
-    
-
     public SongController(ISongService songService)
     {
         _songService = songService;
     }
 
-    [HttpGet("trending")]
-    public async Task<IActionResult> GetTrendingSongs()
+    [HttpGet("songs")]
+    public async Task<IActionResult> GetSongs()
     {
         try
         {
-            var response = await _songService.GetSongsTrending();
+            var response = await _songService.GetSongs();
             return Ok(response); //  response là DTO trả về
         }
         catch (Exception ex)
@@ -81,6 +79,20 @@ public class SongController : ControllerBase
         try
         {
             var result = await _songService.GetSongNew();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("trending")]
+    public async Task<IActionResult> GetSongTrending()
+    {
+        try
+        {
+            var result = await _songService.GetSongTrending();
             return Ok(result);
         }
         catch (Exception ex)

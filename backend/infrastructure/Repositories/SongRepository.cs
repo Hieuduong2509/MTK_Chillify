@@ -52,4 +52,12 @@ public class SongRepository : ISongRepository
             .Take(limit)
             .ToListAsync();
     }
+
+    public async Task<List<Song>> GetSongTrendingAsync(int limit)
+    {
+        return await _context.Songs
+            .OrderByDescending(s => s.PlayCount)
+            .Take(limit)
+            .ToListAsync();
+    }
 }
