@@ -68,6 +68,7 @@ const PlaylistDetail = () => {
       {/* ACTION BUTTONS */}
       <section className="flex items-center gap-6 mt-8 mb-6">
         <button
+          title="Play all songs"
           onClick={handlePlayAll}
           className="w-14 h-14 flex items-center justify-center rounded-full bg-primary text-black hover:scale-105 transition shadow-lg shadow-primary/30"
         >
@@ -76,11 +77,10 @@ const PlaylistDetail = () => {
           </span>
         </button>
 
-        <button className="text-gray-400 hover:text-primary transition cursor-pointer">
-          <span className="material-symbols-outlined text-3xl">favorite</span>
-        </button>
-
-        <button className="text-gray-400 hover:text-primary transition cursor-pointer">
+        <button
+          title="Download playlist audio"
+          className="text-gray-400 hover:text-primary transition cursor-pointer"
+        >
           <span className="material-symbols-outlined text-3xl">
             download_for_offline
           </span>
@@ -88,6 +88,7 @@ const PlaylistDetail = () => {
 
         <div className="relative">
           <button
+            title="More actions"
             onClick={() => setOpenMenu(!openMenu)}
             className="text-gray-400 hover:text-primary transition cursor-pointer"
           >

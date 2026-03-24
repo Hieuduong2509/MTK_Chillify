@@ -15,6 +15,7 @@ const ProgressBar = () => {
   const [lastVolume, setLastVolume] = useState(0.7);
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     const observer: PlayerObserver = {
@@ -89,9 +90,16 @@ const ProgressBar = () => {
             <p className="text-xs text-gray-400">{currentSong.artist}</p>
           </div>
 
-          <span className="material-symbols-outlined text-gray-400 text-xl cursor-pointer hover:text-primary transition-all duration-300">
-            favorite_border
-          </span>
+          <button
+            title={isLiked ? "Unlike this song" : "Like this song"}
+            onClick={() => setIsLiked(!isLiked)}
+            className={`flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
+                  ${isLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
+          >
+            <span className={`material-symbols-outlined text-2xl`}>
+              favorite
+            </span>
+          </button>
         </div>
 
         {/* CENTER - CONTROLS + PROGRESS */}

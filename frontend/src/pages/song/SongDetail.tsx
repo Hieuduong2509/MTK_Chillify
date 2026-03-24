@@ -6,6 +6,7 @@ import DropdownMenu from "../../components/common/DropdownMenu";
 
 const SongDetail = () => {
   const [openMenu, setOpenMenu] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
 
   const { id } = useParams<{ id: string }>();
 
@@ -69,6 +70,7 @@ const SongDetail = () => {
           {/* ACTION BUTTONS */}
           <div className="flex flex-wrap items-center gap-4">
             <button
+              title="Play song"
               onClick={handlePlay}
               className="flex h-12 min-w-[140px] items-center justify-center gap-2 rounded-full bg-primary px-8 font-bold text-black shadow-lg shadow-primary/20 hover:bg-hover transition-all active:scale-95 cursor-pointer"
             >
@@ -79,13 +81,20 @@ const SongDetail = () => {
             </button>
 
             {/* Add */}
-            <button className="flex h-12 w-12 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 cursor-pointer">
+            <button
+              title="Add song to playlist"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 cursor-pointer"
+            >
               <span className="material-symbols-outlined text-2xl">add</span>
             </button>
 
-            {/* Favorite */}
-            <button className="flex h-12 w-12 items-center justify-center rounded-full text-gray-400 hover:text-primary transition cursor-pointer">
-              <span className="material-symbols-outlined text-2xl">
+            <button
+              title={isLiked ? "Unlike this song" : "Like this song"}
+              onClick={() => setIsLiked(!isLiked)}
+              className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
+                  ${isLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
+            >
+              <span className={`material-symbols-outlined text-2xl`}>
                 favorite
               </span>
             </button>
@@ -93,6 +102,7 @@ const SongDetail = () => {
             {/* More */}
             <div className="relative">
               <button
+                title="More actions"
                 onClick={() => setOpenMenu(!openMenu)}
                 className="flex h-12 w-12 items-center justify-center rounded-full text-gray-400 hover:text-primary transition cursor-pointer"
               >
