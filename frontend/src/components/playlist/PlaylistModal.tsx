@@ -90,7 +90,7 @@ const PlaylistModal = ({
           <div className="mt-8">
             <button
               onClick={handleSubmit}
-              className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-bold transition-all cursor-pointer"
+              className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-bold transition-all duration-300 cursor-pointer"
             >
               Save
             </button>

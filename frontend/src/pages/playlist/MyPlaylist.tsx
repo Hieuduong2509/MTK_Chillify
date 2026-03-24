@@ -4,6 +4,8 @@ import { useState } from "react";
 import { playlists } from "../../assets/dummyDB";
 import PlaylistModal from "../../components/playlist/PlaylistModal";
 import DropdownMenu from "../../components/common/DropdownMenu";
+import ConfirmDeleteModal from "../../components/common/ConfirmDeleteModal";
+import AddSongToPlaylistModal from "../../components/playlist/AddSongToPlaylistModal";
 
 interface Playlist {
   id: string;
@@ -17,6 +19,14 @@ const MyPlaylist = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [mode, setMode] = useState<"create" | "edit">("create");
   const [selectedPlaylist, setSelectedPlaylist] = useState<any>(null);
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    type: "delete-playlist" | "remove-song" | null;
+    songId?: number;
+  }>({
+    isOpen: false,
+    type: null,
+  });
 
   return (
     <>
@@ -118,7 +128,12 @@ const MyPlaylist = () => {
                         label: "Delete playlist",
                         icon: "delete",
                         variant: "danger",
-                        onClick: () => alert("Deleted"),
+                        onClick: () => {
+                          setConfirmState({
+                            isOpen: true,
+                            type: "delete-playlist",
+                          });
+                        },
                       },
                     ]}
                   />
@@ -128,11 +143,6 @@ const MyPlaylist = () => {
           ))}
         </div>
       </div>
-
-      {/* <AddPlaylistModal
-        isOpen={isOpenModal}
-        onClose={() => setIsOpenModal(false)}
-      /> */}
 
       <PlaylistModal
         isOpen={isOpenModal}
@@ -146,6 +156,24 @@ const MyPlaylist = () => {
             console.log("UPDATE", data);
           }
         }}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={confirmState.isOpen}
+        title={
+          confirmState.type === "delete-playlist"
+            ? "Delete Playlist"
+            : "Remove Song"
+        }
+        description={
+          confirmState.type === "delete-playlist"
+            ? "Do you want to delete this playlist?"
+            : "Remove this song from playlist?"
+        }
+        confirmText={
+          confirmState.type === "delete-playlist" ? "Delete" : "Remove"
+        }
+        onClose={() => setConfirmState({ isOpen: false, type: null })}
       />
     </>
   );
