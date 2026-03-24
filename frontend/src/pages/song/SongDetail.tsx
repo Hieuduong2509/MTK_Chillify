@@ -91,7 +91,7 @@ const SongDetail = () => {
             <button
               title={isLiked ? "Unlike this song" : "Like this song"}
               onClick={() => setIsLiked(!isLiked)}
-              className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
+              className={`flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer
                   ${isLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
             >
               <span className={`material-symbols-outlined text-2xl`}>
@@ -100,11 +100,11 @@ const SongDetail = () => {
             </button>
 
             {/* More */}
-            <div className="relative">
+            {/* <div className="relative">
               <button
                 title="More actions"
                 onClick={() => setOpenMenu(!openMenu)}
-                className="flex h-12 w-12 items-center justify-center rounded-full text-gray-400 hover:text-primary transition cursor-pointer"
+                className="flex items-center justify-center rounded-full text-gray-400 hover:text-primary transition cursor-pointer"
               >
                 <span className="material-symbols-outlined text-2xl">
                   more_horiz
@@ -128,7 +128,7 @@ const SongDetail = () => {
                   ]}
                 />
               )}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -156,7 +156,7 @@ const SongDetail = () => {
                 }}
                 className="group flex items-center gap-4 rounded-xl p-3 hover:bg-[#19282E]/50 transition-colors cursor-pointer"
               >
-                <div className="flex w-8 justify-center text-gray-400 group-hover:text-white">
+                <div className="hidden lg:flex w-8 justify-center text-gray-400 group-hover:text-white">
                   {index + 1}
                 </div>
 
@@ -172,16 +172,25 @@ const SongDetail = () => {
                   <p className="text-xs text-gray-400">{nextSong.artist}</p>
                 </div>
 
-                <div className="hidden md:block text-sm text-gray-400">
-                  Trending Collection
-                </div>
+                <button
+                  title="Add song to playlist"
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-2xl">
+                    add
+                  </span>
+                </button>
 
-                <div className="flex items-center gap-4">
-                  <span className="material-symbols-outlined text-gray-400 text-xl opacity-0 group-hover:opacity-100">
+                <button
+                  title={isLiked ? "Unlike this song" : "Like this song"}
+                  onClick={() => setIsLiked(!isLiked)}
+                  className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
+                  ${isLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
+                >
+                  <span className={`material-symbols-outlined text-2xl`}>
                     favorite
                   </span>
-                  <span className="text-sm text-gray-400">3:45</span>
-                </div>
+                </button>
               </div>
             ))}
         </div>

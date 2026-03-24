@@ -93,7 +93,7 @@ const ProgressBar = () => {
           <button
             title={isLiked ? "Unlike this song" : "Like this song"}
             onClick={() => setIsLiked(!isLiked)}
-            className={`flex h-11 w-11 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
+            className={`flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer
                   ${isLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
           >
             <span className={`material-symbols-outlined text-2xl`}>
@@ -324,9 +324,16 @@ const ProgressBar = () => {
           {/* RIGHT - ICONS */}
           <div className="flex items-center gap-4">
             {/* Favourite */}
-            <span className="material-symbols-outlined text-gray-400">
-              favorite_border
-            </span>
+            <button
+              title={isLiked ? "Unlike this song" : "Like this song"}
+              onClick={() => setIsLiked(!isLiked)}
+              className={`flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer
+                  ${isLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
+            >
+              <span className={`material-symbols-outlined text-2xl`}>
+                favorite
+              </span>
+            </button>
 
             {/* Add to playlist */}
             <span className="material-symbols-outlined text-gray-400">add</span>
