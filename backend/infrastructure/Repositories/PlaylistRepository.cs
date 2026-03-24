@@ -53,4 +53,17 @@ public class PlaylistRepository : IPlaylistRepository
         _context.PlaylistSongs.Remove(entity);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<List<(Song song, int position)>> GetSongsByPlaylistIdAsync(Guid playlistId)
+    {
+        return await _context.PlaylistSongs
+            .Where(ps => ps.PlaylistId == playlistId)
+            .OrderBy(ps => ps.Position)
+            .Join(_context.Songs,
+                ps => ps.SongId,
+                s => s.SongId,
+                (ps, s) => new { s, ps.Position })
+            .Select(x => new ValueTuple<Song, int>(x.s, x.Position))
+            .ToListAsync();
+    }
 }

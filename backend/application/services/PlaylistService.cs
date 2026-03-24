@@ -1,5 +1,6 @@
 using Chillify.Application.Interfaces.Repositories;
 using Chillify.Application.Interfaces.Services;
+using Chillify.Application.DTOs.Song;
 
 namespace Chillify.Application.Services;
 
@@ -40,5 +41,26 @@ public class PlaylistService : IPlaylistService
             throw new InvalidOperationException("Song not in playlist");
 
         await _playlistRepository.RemoveSongFromPlaylistAsync(playlistId, songId);
+    }
+
+    public async Task<List<SongDto>> GetSongsInPlaylistAsync(Guid playlistId, string expectedType)
+    {
+        var playlist = await _playlistRepository.GetByIdAsync(playlistId);
+
+        if (playlist is null)
+            throw new InvalidOperationException("Playlist not found");
+
+        if (!string.Equals(playlist.PlaylistType, expectedType, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException($"This is not a {expectedType} playlist");
+
+        var songs = await _playlistRepository.GetSongsByPlaylistIdAsync(playlistId);
+
+        return songs.Select(x => new SongDto
+        {
+            SongId = x.song.SongId,
+            Name = x.song.Name,
+            AudioUrl = x.song.AudioUrl,
+            SongImage = x.song.SongImage
+        }).ToList();
     }
 }

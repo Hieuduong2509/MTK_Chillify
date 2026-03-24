@@ -49,3 +49,14 @@ VALUES (
 SELECT * FROM users;
 SELECT * FROM playlists;
 SELECT * FROM playlist_songs;
+
+INSERT INTO playlists (
+    user_id,
+    playlist_name,
+    playlist_type
+)
+VALUES (
+    (SELECT user_id FROM users LIMIT 1),
+    'Liked Songs',
+    'LIKED'
+);

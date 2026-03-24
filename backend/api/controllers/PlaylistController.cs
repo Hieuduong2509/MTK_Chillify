@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Chillify.Application.Interfaces.Services;
 using Chillify.Application.DTOs.Playlist;
-
+using Chillify.Application.DTOs.Song;
 namespace Chillify.Api.Controllers;
 
 [ApiController]
@@ -13,6 +13,34 @@ public class PlaylistController : ControllerBase
     public PlaylistController(IPlaylistService playlistService)
     {
         _playlistService = playlistService;
+    }
+
+    [HttpGet("{id}/songs")]
+    public async Task<IActionResult> GetUserPlaylistSongs(Guid id)
+    {
+        try
+        {
+            var result = await _playlistService.GetSongsInPlaylistAsync(id, "USER");
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("{id}/liked-songs")]
+    public async Task<IActionResult> GetLikedPlaylistSongs(Guid id)
+    {
+        try
+        {
+            var result = await _playlistService.GetSongsInPlaylistAsync(id, "LIKED");
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPost("{id}/songs")]
