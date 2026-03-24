@@ -258,6 +258,20 @@ const PlaylistDetail = () => {
         </div>
       </div>
 
+      <PlaylistModal
+        isOpen={isOpenModal}
+        mode={mode}
+        initialData={{
+          id: playlist.id,
+          name: playlist.name,
+          description: playlist.description || "",
+        }}
+        onClose={() => setIsOpenModal(false)}
+        onSubmit={(data) => {
+          console.log("UPDATE PLAYLIST", data);
+        }}
+      />
+
       <ConfirmDeleteModal
         isOpen={confirmState.isOpen}
         title={
