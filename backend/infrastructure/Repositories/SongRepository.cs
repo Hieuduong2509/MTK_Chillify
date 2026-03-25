@@ -1,7 +1,9 @@
+
 using Chillify.Application.Interfaces.Repositories;
 using Chillify.Application.Models;
 using Chillify.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace Chillify.Infrastructure.Repositories;
 
@@ -53,5 +55,6 @@ public class SongRepository : ISongRepository
             .ToListAsync();
 
         return result;
+        //return await _context.Songs.FindAsync(songId);
     }
 }
