@@ -1,3 +1,4 @@
+using System;
 namespace Chillify.Application.Models;
 
 public class User

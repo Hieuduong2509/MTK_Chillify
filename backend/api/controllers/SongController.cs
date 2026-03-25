@@ -1,8 +1,12 @@
+
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using application.interfaces.Services;
 using application.models;
+
+using Chillify.Application.Interfaces.Services;
+
 
 namespace Chillify.Api.Controllers;
 
@@ -11,7 +15,6 @@ namespace Chillify.Api.Controllers;
 public class SongController : ControllerBase
 {
     private readonly ISongService _songService;
-    
     public SongController(ISongService songService)
     {
         _songService = songService;
@@ -91,5 +94,13 @@ public class SongController : ControllerBase
         {
             return BadRequest(new { message = ex.Message });
         }
+    }
+
+    [HttpGet("{id}/recommend")]
+    public async Task<IActionResult> GetRecommendedSongs(Guid id)
+    {
+        var songs = await _songService.GetRecommendedSongsAsync(id);
+
+        return Ok(songs);
     }
 }

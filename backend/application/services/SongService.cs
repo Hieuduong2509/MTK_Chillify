@@ -1,3 +1,4 @@
+
 using application.interfaces.Services;
 using application.DTOs.Song;
 using application.interfaces.Repositories;
@@ -5,6 +6,11 @@ using application.mappers;
 using application.models.jamendo;
 using application.models;
 using application.patterns.factory;
+
+using Chillify.Application.Interfaces.Repositories;
+using Chillify.Application.Interfaces.Services;
+using Chillify.Application.Models;
+
 
 namespace Chillify.Application.Services;
 
@@ -141,5 +147,18 @@ public class SongService : ISongService
         var result = song.ToSongDtoFromSongModel();
 
         return result;
+    }
+
+    
+
+    public async Task<List<Song>> GetRecommendedSongsAsync(Guid songId)
+    {
+        var currentSong = await _songRepository.GetByIdAsync(songId);
+
+        if (currentSong == null)
+            throw new Exception("Song not found");
+
+        return await _songRepository.GetRecommendedSongsAsync(currentSong);
+
     }
 }

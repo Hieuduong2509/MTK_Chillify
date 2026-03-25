@@ -8,8 +8,8 @@ namespace application.interfaces.Repositories
 {
     public interface IArtistRepository
     {
-        Task<Artist?> GetByJamendoArtistIdAsync(string jamendoArtistId);
+        /*Task<Artist?> GetByJamendoArtistIdAsync(string jamendoArtistId);
         Task AddAsync(Artist artist);
-        Task AddRangeAsync(IEnumerable<Artist> artists);
+        Task AddRangeAsync(IEnumerable<Artist> artists);*/
     }
 }
