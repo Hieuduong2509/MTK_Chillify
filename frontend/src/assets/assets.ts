@@ -1,12 +1,14 @@
 import { forYouSongs, popularSongs, trendingSongs } from "./dummyDB";
 import logo from "./remove_bg.png";
 import logo2 from "./7_cut.png";
+import like_songs_img from "./liked_songs_img.png";
 
 // ============= SIDEBAR ITEMS =============
 
 export const assets = {
   logo,
   logo2,
+  like_songs_img,
 };
 
 type MenuItem =
