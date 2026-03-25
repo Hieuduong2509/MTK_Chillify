@@ -5,6 +5,7 @@ namespace Chillify.Infrastructure.Persistence;
 
 public class AppDbContext : DbContext
 {
+
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<User> Users { get; set; } = null!;
@@ -35,7 +36,6 @@ public class AppDbContext : DbContext
                 );
         });
 
-        // --- Constraints & Indexes ---
         modelBuilder.Entity<PlaylistSong>(entity =>
         {
             // Ensures a song is unique within a playlist and maintains consistent ordering
@@ -43,17 +43,10 @@ public class AppDbContext : DbContext
             entity.HasIndex(ps => new { ps.PlaylistId, ps.Position }).IsUnique();
         });
 
-        // --- Relationships & Cascade Behaviors ---
         modelBuilder.Entity<Playlist>()
             .HasOne<User>()
             .WithMany()
             .HasForeignKey(p => p.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<PlaylistSong>()
-            .HasOne<Playlist>()
-            .WithMany(p => p.PlaylistSongs)
-            .HasForeignKey(ps => ps.PlaylistId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<PlaylistSong>()

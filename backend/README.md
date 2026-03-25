@@ -712,3 +712,198 @@ dotnet add package AspNetCore.HealthChecks.NpgSql
 - Backend architecture is correctly structured
 - Database connection is stable and verified
 - System is ready for feature development phase
+
+## Database Migration (Entity Framework Core)
+
+### Why Migration is Required
+
+In this project, the database schema is **not created manually**.
+Instead, it is managed by **Entity Framework Core Migrations**.
+
+This ensures:
+
+* Consistent schema across environments
+* Version control for database changes
+* Safe evolution of database structure
+
+---
+
+### Key Concept
+
+This project follows Clean Architecture:
+
+| Layer          | Responsibility               |
+| -------------- | ---------------------------- |
+| infrastructure | Contains DbContext           |
+| api            | Startup project (Program.cs) |
+
+Because of this separation, EF CLI must be told:
+
+* where DbContext is located
+* which project runs the application
+
+---
+
+### Run Migration (First Time Setup)
+
+Navigate to:
+
+```bash
+cd backend/api
+```
+
+Then run:
+
+```bash
+dotnet ef migrations add InitialCreate --project ../infrastructure --startup-project .
+```
+
+#### Explanation:
+
+| Option              | Meaning                                     |
+| ------------------- | ------------------------------------------- |
+| `--project`         | Points to the project containing DbContext  |
+| `--startup-project` | Points to the project containing Program.cs |
+
+---
+
+### Apply Migration to Database
+
+```bash
+dotnet ef database update --project ../infrastructure --startup-project .
+```
+
+This will:
+
+* Create all tables (`users`, `songs`, `playlists`, etc.)
+* Apply constraints and indexes
+* Prepare database for application usage
+
+---
+
+### Expected Output
+
+```bash
+Build succeeded.
+Applying migration 'InitialCreate'.
+Done.
+```
+
+---
+
+### Important Notes
+
+* Do NOT use `EnsureCreated()` when using migrations
+* Migration must be run before starting the application
+* If schema changes → create new migration
+
+---
+
+## Verify Database
+
+After running migration, open PostgreSQL and run:
+
+```sql
+SELECT * FROM "songs";
+```
+
+Expected:
+
+* Table exists
+* Contains seeded data (if seeding is enabled)
+
+---
+
+## API Testing Guide
+
+### 1. Start Backend
+
+```bash
+cd api
+dotnet run
+```
+
+---
+
+### 2. Open Swagger
+
+```
+http://localhost:5088/swagger
+```
+
+---
+
+### 3. Test Endpoints
+
+#### Get Recommended Songs
+
+```http
+GET /songs/{id}/recommend
+```
+
+Example:
+
+```http
+GET /songs/193232b7-4c38-4ef7-9698-11518652d29b/recommend
+```
+
+Expected:
+
+* Returns a list of similar songs
+* Based on artist, album, release date, duration
+
+---
+
+#### Song Played (Increase Play Count)
+
+```http
+POST /songs/{id}/played
+```
+
+Expected:
+
+```
+204 No Content
+```
+
+---
+
+### 4. Verify Database Changes
+
+#### Check play count
+
+```sql
+SELECT "PlayCount"
+FROM "songs"
+WHERE "SongId" = '193232b7-4c38-4ef7-9698-11518652d29b';
+```
+
+---
+
+#### Check play history
+
+```sql
+SELECT *
+FROM "song_play_history"
+ORDER BY "PlayedAt" DESC;
+```
+
+---
+
+### Expected Behavior
+
+| Action            | Result                    |
+| ----------------- | ------------------------- |
+| Call `/played`    | PlayCount increases       |
+| Call `/recommend` | Returns similar songs     |
+| DB                | Data is updated correctly |
+
+---
+
+## Summary (Database + API)
+
+* Migration ensures correct schema creation
+* Database is fully managed by EF Core
+* API endpoints are fully testable via Swagger
+* System is ready for frontend integration
+

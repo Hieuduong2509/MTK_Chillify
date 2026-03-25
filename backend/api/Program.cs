@@ -1,8 +1,11 @@
-using Chillify.Infrastructure.Persistence;
-using Chillify.Application.Interfaces.Services;
 using Chillify.Application.Interfaces.Repositories;
+using Chillify.Application.Interfaces.Services;
+using Chillify.Application.Patterns.Observer;
 using Chillify.Application.Services;
+using Chillify.Infrastructure.Persistence;
+
 using Chillify.Infrastructure.Repositories;
+
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,6 +29,7 @@ builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 // ======================
 // 1. Controllers
 // ======================
+
 builder.Services.AddControllers();
 // ======================
 // 2. DbContext (PostgreSQL + snake_case)
@@ -33,9 +37,22 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString)
+options.UseNpgsql(connectionString)
     .UseSnakeCaseNamingConvention()
 );
+
+// Repositories
+builder.Services.AddScoped<ISongRepository, SongRepository>();
+builder.Services.AddScoped<IPlayHistoryRepository, PlayHistoryRepository>();
+
+// Services
+builder.Services.AddScoped<ISongService, SongService>();
+builder.Services.AddScoped<IPlayerService, PlayerService>();
+
+// Observer
+builder.Services.AddScoped<IPlayerObserver, AnalyticsObserver>();
+
+    
 // ======================
 // 3. Dependency Injection
 // ======================
@@ -43,6 +60,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // ======================
 // 4. Swagger
 // ======================
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -90,6 +108,7 @@ builder.Services.AddCors(options =>
 });
 
 
+
 // ======================
 // 6. Health Check (FIX)
 // ======================
@@ -123,10 +142,10 @@ builder.Services.AddHealthChecks()
 var app = builder.Build();
 
 
+
 // ======================
 // Middleware pipeline
 // ======================
-
 
 if (app.Environment.IsDevelopment())
 {
@@ -134,11 +153,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
 app.UseCors("AllowAll");
-
 app.UseAuthentication();
-app.UseAuthorization();
-
 app.MapControllers();
 app.MapHealthChecks("/health");
 
