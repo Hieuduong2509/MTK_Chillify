@@ -150,7 +150,7 @@ const LikedSongs = () => {
                     className="right-0 top-full mt-2"
                     items={[
                       {
-                        label: "Add to playlist",
+                        label: "Add to other playlist",
                         icon: "playlist_add",
                         onClick: () => {
                           setSelectedSong(song);
