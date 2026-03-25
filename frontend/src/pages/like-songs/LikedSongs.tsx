@@ -110,9 +110,10 @@ const LikedSongs = () => {
                 onClick={() => handlePlaySong(song)}
                 className="flex items-center gap-4 cursor-pointer"
               >
-                <div
+                <img
                   className="w-10 h-10 rounded bg-cover bg-center"
-                  style={{ backgroundImage: `url(${song.image})` }}
+                  src={song.image}
+                  alt=""
                 />
 
                 <div className="flex flex-col min-w-0">

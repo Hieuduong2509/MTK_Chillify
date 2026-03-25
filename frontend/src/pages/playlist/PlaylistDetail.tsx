@@ -49,16 +49,17 @@ const PlaylistDetail = () => {
         <section className="flex flex-col md:flex-row gap-8 items-start md:items-end">
           {/* Cover */}
           <div className="shrink-0">
-            <div
+            <img
               className="w-48 h-48 md:w-64 md:h-64 rounded-xl shadow-2xl bg-cover bg-center"
-              style={{ backgroundImage: `url(${playlist.cover})` }}
+              src={playlist.cover}
+              alt=""
             />
           </div>
 
           {/* Info */}
           <div className="flex flex-col gap-2 mb-2">
             <span className="text-xs font-bold uppercase tracking-widest text-primary">
-              Public Playlist
+              Playlist
             </span>
 
             <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight">
@@ -71,8 +72,6 @@ const PlaylistDetail = () => {
 
             <div className="flex items-center gap-2 text-sm text-white/90 mt-2">
               <span className="font-bold">MusicStream</span>
-              <span className="text-gray-500">•</span>
-              <span>124,532 likes</span>
               <span className="text-gray-500">•</span>
               <span>{playlist.songs.length} songs</span>
             </div>
@@ -181,9 +180,10 @@ const PlaylistDetail = () => {
                 onClick={() => handlePlaySong(song)}
                 className="flex items-center gap-4"
               >
-                <div
+                <img
                   className="w-10 h-10 rounded bg-cover bg-center shrink-0"
-                  style={{ backgroundImage: `url(${song.image})` }}
+                  src={song.image}
+                  alt=""
                 />
 
                 <div className="flex flex-col min-w-0">

@@ -43,9 +43,10 @@ const SongDetail = () => {
         <div className="flex flex-col md:flex-row md:items-end gap-10">
           {/* COVER */}
           <div className="relative group">
-            <div
+            <img
               className="w-48 h-48 md:w-64 md:h-64 rounded-xl bg-cover bg-center shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
-              style={{ backgroundImage: `url(${song.image})` }}
+              src={song.image}
+              alt=""
             />
 
             <div
@@ -147,9 +148,10 @@ const SongDetail = () => {
                     </div>
 
                     {/* Image */}
-                    <div
+                    <img
                       className="h-12 w-12 rounded bg-cover bg-center"
-                      style={{ backgroundImage: `url(${nextSong.image})` }}
+                      src={nextSong.image}
+                      alt=""
                     />
 
                     {/* Info */}
@@ -160,7 +162,7 @@ const SongDetail = () => {
                       }}
                       className="flex flex-1 flex-col"
                     >
-                      <p className="text-sm font-bold text-white">
+                      <p className="text-sm font-bold text-white hover:text-primary transition-all duration-300">
                         {nextSong.title}
                       </p>
                       <p className="text-xs text-gray-400">{nextSong.artist}</p>

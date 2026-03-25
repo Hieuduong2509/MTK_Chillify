@@ -21,13 +21,11 @@ const Profile = () => {
         {/* Profile Header Section */}
         <section className="flex flex-col items-center text-center gap-6">
           <div className="relative group">
-            <div
+            <img
               className="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-32 h-32 border-4 border-sidebar-dark shadow-2xl"
-              style={{
-                backgroundImage:
-                  'url("https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=176&q=80")',
-              }}
-            ></div>
+              src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=176&q=80"
+              alt=""
+            />
             <button className="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center justify-center cursor-pointer">
               <span className="material-symbols-outlined text-sm">edit</span>
             </button>
