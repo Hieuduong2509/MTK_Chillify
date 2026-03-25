@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Chillify.Application.Models;
-
+using application.models;
 namespace Chillify.Application.Interfaces.Repositories;
 
 public interface IPlaylistRepository

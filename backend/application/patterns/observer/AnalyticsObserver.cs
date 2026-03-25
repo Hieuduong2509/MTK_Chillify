@@ -1,3 +1,4 @@
+using application.interfaces.Repositories;
 using Chillify.Application.Interfaces.Repositories;
 using Chillify.Application.Models;
 

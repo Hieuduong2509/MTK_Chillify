@@ -1,6 +1,6 @@
 using System;
 
-namespace Chillify.Application.Models;
+namespace application.models;
 
 public class PlaylistSong
 {

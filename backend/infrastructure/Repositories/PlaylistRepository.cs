@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Chillify.Application.Models;
 using Chillify.Application.Interfaces.Repositories;
 using Chillify.Infrastructure.Persistence;
+using application.models;
 
 namespace Chillify.Infrastructure.Repositories;
 

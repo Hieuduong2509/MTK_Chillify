@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Chillify.Application.Models;
+using application.models;
 
 namespace Chillify.Infrastructure.Persistence;
 

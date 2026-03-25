@@ -1,10 +1,16 @@
+
+using application.interfaces.Repositories;
+using application.interfaces.Services;
+using application.patterns.factory;
+using application.patterns.strategy;
+using Chillify.Application.Services;
+using Chillify.Infrastructure.Persistence;
+using Chillify.Infrastructure.Repositories;
+using infrastructure.ExternalServices;
+
 using Chillify.Application.Interfaces.Repositories;
 using Chillify.Application.Interfaces.Services;
 using Chillify.Application.Patterns.Observer;
-using Chillify.Application.Services;
-using Chillify.Infrastructure.Persistence;
-
-using Chillify.Infrastructure.Repositories;
 
 
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +23,21 @@ using Chillify.Application.Models;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
-// 1. Dependency Injection
+
+
+// Application services
+builder.Services.AddScoped<ISongService, SongService>();
+
+// Infrastructure services
+builder.Services.AddScoped<ISongRepository, SongRepository>();
+builder.Services.AddHttpClient<IJamendoService, JamendoService>();
+
+builder.Services.AddScoped<ISongStrategy, TrendingStrategy>();
+builder.Services.AddScoped<ISongStrategy, NewStrategy>();
+builder.Services.AddScoped<ISongStrategy, DiscoverStrategy>();
+
+builder.Services.AddScoped<SongStrategyFactory>();
+
 builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 builder.Services.AddScoped<ISongRepository, SongRepository>();
@@ -27,6 +47,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 // ======================
+
 // 1. Controllers
 // ======================
 

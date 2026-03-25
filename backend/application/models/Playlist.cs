@@ -1,5 +1,5 @@
 namespace Chillify.Application.Models;
-
+using application.models;
 public enum PlaylistType
 {
     User,

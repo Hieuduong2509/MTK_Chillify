@@ -7,7 +7,7 @@ using Chillify.Application.Interfaces.Services;
 using Chillify.Application.DTOs.Song;
 using Chillify.Application.DTOs;
 using Chillify.Application.Models;
-
+using application.interfaces.Repositories;
 namespace Chillify.Application.Services;
 
 public class PlaylistService : IPlaylistService
