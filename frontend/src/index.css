@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@import "tailwindcss";
+@tailwind utilities;
+
+/* =========================================
+   TAILWIND THEME (v4)
+========================================= */
+@theme {
+  --color-primary: #43a8fc;
+  --color-hover: #1088e8;
+  --color-background-dark: #121c22;
+  --color-background-light: #f5f7f8;
+  --color-sidebar-dark: #19282e;
+  --color-surface-dark: #1c2136;
+  --color-border-dark: #232948;
+  --color-text-secondary: #afb9bf;
+
+  --font-display: "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --radius-sm: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+}
+
+/* =========================================
+   BASE STYLES
+========================================= */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background-dark text-white font-body antialiased;
+  }
+}
+
+/* =========================================
+   UTILITIES (OPTIONAL)
+========================================= */
+@layer utilities {
+  .bg-surface {
+    @apply bg-surface-dark;
+  }
+
+  .text-muted {
+    @apply text-text-secondary;
+  }
+}
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #151627;
+}
+::-webkit-scrollbar-thumb {
+  /* background: #232948; */
+  background: #43a8fc;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  /* background: #3b457b; */
+  background: #1088e8;
+}
+
+/* =========================================
+   HERO PATTERN
+========================================= */
+.hero-pattern {
+  background-image: radial-gradient(#232948 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}
