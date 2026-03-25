@@ -6,5 +6,4 @@ export interface PlayerObserver {
   onStateChange(state: PlayerState): void;
   onTimeChange(currentTime: number, duration: number): void;
   onVolumeChange?(volume: number): void;
-
 }

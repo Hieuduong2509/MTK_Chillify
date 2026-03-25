@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { player } from "../../core/player/Player";
 import type { PlayerObserver } from "../../core/player/PlayerObserver";
 import type { Song } from "../../assets/dummyDB";
+import { NextCommand } from "../../core/player/commands/NextCommand";
+import { PreviousCommand } from "../../core/player/commands/PreviousCommand";
 
 const ProgressBar = () => {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
@@ -71,6 +73,9 @@ const ProgressBar = () => {
 
   const volumePercent = volume * 100;
 
+  const nextCommand = new NextCommand();
+  const previousCommand = new PreviousCommand();
+
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 bg-[#0f172a] px-6 py-4 lg:py-0 flex flex-col lg:flex-row justify-between z-50">
       {/* ========= DESKTOP ========= */}
@@ -125,7 +130,7 @@ const ProgressBar = () => {
 
             {/* PREVIOUS */}
             <button
-              onClick={() => player.previous()}
+              onClick={() => previousCommand.execute()}
               className="text-gray-400 hover:text-white transition cursor-pointer"
               title="Previous Song"
             >
@@ -170,7 +175,7 @@ const ProgressBar = () => {
 
             {/* NEXT */}
             <button
-              onClick={() => player.next()}
+              onClick={() => nextCommand.execute()}
               className="text-gray-400 hover:text-white transition cursor-pointer"
               title="Next Song"
             >
