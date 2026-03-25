@@ -1,20 +1,46 @@
 using Microsoft.AspNetCore.Mvc;
+
 using Chillify.Application.Interfaces.Services;
 using Chillify.Application.DTOs.Playlist;
 using Chillify.Application.DTOs.Song;
 namespace Chillify.Api.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Chillify.Application.Services;
+using Chillify.Application.DTOs;
 
+[Authorize]
 [ApiController]
-[Route("playlists")]
+[Route("api/[controller]")]
 public class PlaylistController : ControllerBase
 {
     private readonly IPlaylistService _playlistService;
+    public PlaylistController(IPlaylistService playlistService) => _playlistService = playlistService;
 
-    public PlaylistController(IPlaylistService playlistService)
+    private Guid CurrentUserId => Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
+
+    [HttpGet]
+    public async Task<IActionResult> GetMyPlaylists() => Ok(await _playlistService.GetUserPlaylistsAsync(CurrentUserId));
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetDetail(Guid id)
     {
-        _playlistService = playlistService;
+        var result = await _playlistService.GetPlaylistDetailAsync(id);
+        return result == null ? NotFound("Playlist not found.") : Ok(result);
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Create(CreatePlaylistDto dto) => Ok(await _playlistService.CreateAsync(CurrentUserId, dto));
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, UpdatePlaylistDto dto) => 
+        await _playlistService.UpdateAsync(CurrentUserId, id, dto) ? NoContent() : NotFound();
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id) => 
+        await _playlistService.DeleteAsync(CurrentUserId, id) ? NoContent() : BadRequest("Delete failed.");
+
+    // Playlists
     [HttpGet("{id}/songs")]
     public async Task<IActionResult> GetUserPlaylistSongs(Guid id)
     {
@@ -72,4 +98,7 @@ public class PlaylistController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+
+
 }
