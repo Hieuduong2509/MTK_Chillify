@@ -2,26 +2,73 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Chillify.Application.Interfaces.Repositories;
+using Chillify.Application.Interfaces.Services;
+using Chillify.Application.DTOs.Song;
 using Chillify.Application.DTOs;
 using Chillify.Application.Models;
-using Chillify.Application.Interfaces.Repositories;
 
 namespace Chillify.Application.Services;
-
-public interface IPlaylistService
-{
-    Task<IEnumerable<PlaylistResponseDto>> GetUserPlaylistsAsync(Guid userId);
-    Task<PlaylistDetailResponseDto?> GetPlaylistDetailAsync(Guid playlistId);
-    Task<PlaylistResponseDto> CreateAsync(Guid userId, CreatePlaylistDto dto);
-    Task<bool> UpdateAsync(Guid userId, Guid playlistId, UpdatePlaylistDto dto);
-    Task<bool> DeleteAsync(Guid userId, Guid playlistId);
-}
 
 public class PlaylistService : IPlaylistService
 {
     private readonly IPlaylistRepository _playlistRepository;
-    
-    public PlaylistService(IPlaylistRepository playlistRepository) => _playlistRepository = playlistRepository;
+    private readonly ISongRepository _songRepository;
+
+    public PlaylistService(
+        IPlaylistRepository playlistRepository,
+        ISongRepository songRepository)
+    {
+        _playlistRepository = playlistRepository;
+        _songRepository = songRepository;
+    }
+
+    public async Task AddSongToPlaylistAsync(Guid playlistId, Guid songId)
+    {
+        var playlist = await _playlistRepository.GetByIdAsync(playlistId);
+        if (playlist is null)
+            throw new InvalidOperationException("Playlist not found");
+
+        var song = await _songRepository.GetByIdAsync(songId);
+        if (song is null)
+            throw new InvalidOperationException("Song not found");
+
+        var exists = await _playlistRepository.IsSongInPlaylist(playlistId, songId);
+        if (exists)
+            throw new InvalidOperationException("Song already exists in playlist");
+
+        await _playlistRepository.AddSongToPlaylistAsync(playlistId, songId);
+    }
+
+    public async Task RemoveSongFromPlaylistAsync(Guid playlistId, Guid songId)
+    {
+        var exists = await _playlistRepository.IsSongInPlaylist(playlistId, songId);
+        if (!exists)
+            throw new InvalidOperationException("Song not in playlist");
+
+        await _playlistRepository.RemoveSongFromPlaylistAsync(playlistId, songId);
+    }
+
+    public async Task<List<SongDto>> GetSongsInPlaylistAsync(Guid playlistId, string expectedType)
+    {
+        var playlist = await _playlistRepository.GetByIdAsync(playlistId);
+
+        if (playlist is null)
+            throw new InvalidOperationException("Playlist not found");
+
+        if (!string.Equals(playlist.PlaylistType.ToString(), expectedType, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException($"This is not a {expectedType} playlist");
+
+        var songs = await _playlistRepository.GetSongsByPlaylistIdAsync(playlistId);
+
+        return songs.Select(x => new SongDto
+        {
+            SongId = x.song.SongId,
+            Name = x.song.Name,
+            AudioUrl = x.song.AudioUrl,
+            SongImage = x.song.SongImage
+        }).ToList();
+    }
 
     public async Task<IEnumerable<PlaylistResponseDto>> GetUserPlaylistsAsync(Guid userId)
     {
@@ -103,4 +150,5 @@ public class PlaylistService : IPlaylistService
         await _playlistRepository.SaveChangesAsync();
         return true;
     }
+
 }

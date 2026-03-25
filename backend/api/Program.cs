@@ -1,9 +1,10 @@
 using Chillify.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
-using Chillify.Application.Interfaces.Repositories;
-using Chillify.Infrastructure.Repositories;
 using Chillify.Application.Interfaces.Services;
+using Chillify.Application.Interfaces.Repositories;
 using Chillify.Application.Services;
+using Chillify.Infrastructure.Repositories;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -12,27 +13,37 @@ using Npgsql;
 using Chillify.Application.Models;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
 var builder = WebApplication.CreateBuilder(args);
-
 // 1. Dependency Injection
+builder.Services.AddScoped<IPlaylistService, PlaylistService>();
+builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+builder.Services.AddScoped<ISongRepository, SongRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 builder.Services.AddScoped<IPlaylistService, PlaylistService>();
-
+// ======================
+// 1. Controllers
+// ======================
 builder.Services.AddControllers();
-
-// 2. Database
+// ======================
+// 2. DbContext (PostgreSQL + snake_case)
+// ======================
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString)
     .UseSnakeCaseNamingConvention()
 );
+// ======================
+// 3. Dependency Injection
+// ======================
 
-//  3. Swagger 
+// ======================
+// 4. Swagger
+// ======================
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -45,6 +56,10 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT"
     };
+
+// ======================
+// 5. CORS
+// ======================
 
     c.AddSecurityDefinition("Bearer", securityScheme);
 
@@ -65,6 +80,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 //  4. CORS 
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -72,6 +88,11 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
+
+
+// ======================
+// 6. Health Check (FIX)
+// ======================
 
 // 5. JWT 
 builder.Services.AddAuthentication(options =>
@@ -101,7 +122,12 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
-//  7. Middleware
+
+// ======================
+// Middleware pipeline
+// ======================
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
