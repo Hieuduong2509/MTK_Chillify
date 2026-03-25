@@ -23,11 +23,14 @@ public class PlaylistService : IPlaylistService
         _songRepository = songRepository;
     }
 
-    public async Task AddSongToPlaylistAsync(Guid playlistId, Guid songId)
+    public async Task AddSongToPlaylistAsync(Guid userId, Guid playlistId, Guid songId)
     {
         var playlist = await _playlistRepository.GetByIdAsync(playlistId);
         if (playlist is null)
             throw new InvalidOperationException("Playlist not found");
+
+        if (playlist.UserId != userId)
+            throw new UnauthorizedAccessException("You do not own this playlist");
 
         var song = await _songRepository.GetByIdAsync(songId);
         if (song is null)
@@ -40,8 +43,15 @@ public class PlaylistService : IPlaylistService
         await _playlistRepository.AddSongToPlaylistAsync(playlistId, songId);
     }
 
-    public async Task RemoveSongFromPlaylistAsync(Guid playlistId, Guid songId)
+    public async Task RemoveSongFromPlaylistAsync(Guid userId, Guid playlistId, Guid songId)
     {
+        var playlist = await _playlistRepository.GetByIdAsync(playlistId);
+        if (playlist is null)
+            throw new InvalidOperationException("Playlist not found");
+
+        if (playlist.UserId != userId)
+            throw new UnauthorizedAccessException("You do not own this playlist");
+
         var exists = await _playlistRepository.IsSongInPlaylist(playlistId, songId);
         if (!exists)
             throw new InvalidOperationException("Song not in playlist");
@@ -49,12 +59,15 @@ public class PlaylistService : IPlaylistService
         await _playlistRepository.RemoveSongFromPlaylistAsync(playlistId, songId);
     }
 
-    public async Task<List<SongDto>> GetSongsInPlaylistAsync(Guid playlistId, string expectedType)
+    public async Task<List<SongDto>> GetSongsInPlaylistAsync(Guid userId, Guid playlistId, string expectedType)
     {
         var playlist = await _playlistRepository.GetByIdAsync(playlistId);
 
         if (playlist is null)
             throw new InvalidOperationException("Playlist not found");
+
+        if (playlist.UserId != userId)
+            throw new UnauthorizedAccessException("Access denied");
 
         if (!string.Equals(playlist.PlaylistType.ToString(), expectedType, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException($"This is not a {expectedType} playlist");
@@ -82,10 +95,15 @@ public class PlaylistService : IPlaylistService
         });
     }
 
-    public async Task<PlaylistDetailResponseDto?> GetPlaylistDetailAsync(Guid playlistId)
+    public async Task<PlaylistDetailResponseDto?> GetPlaylistDetailAsync(Guid userId, Guid playlistId)
     {
         var playlist = await _playlistRepository.GetByIdWithSongsAsync(playlistId);
-        if (playlist == null) return null;
+
+        if (playlist == null)
+            return null;
+
+        if (playlist.UserId != userId)
+            throw new UnauthorizedAccessException("Access denied");
 
         return new PlaylistDetailResponseDto {
             Id = playlist.Id, 

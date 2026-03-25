@@ -7,7 +7,7 @@ using Chillify.Application.Services;
 using Chillify.Infrastructure.Persistence;
 using Chillify.Infrastructure.Repositories;
 using infrastructure.ExternalServices;
-
+using System.IdentityModel.Tokens.Jwt;
 using Chillify.Application.Interfaces.Repositories;
 using Chillify.Application.Interfaces.Services;
 using Chillify.Application.Patterns.Observer;
@@ -152,7 +152,8 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
-        )
+        ),
+        NameClaimType = JwtRegisteredClaimNames.Sub
     };
 });
 
@@ -177,6 +178,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/health");
 

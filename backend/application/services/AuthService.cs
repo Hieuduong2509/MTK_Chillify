@@ -18,10 +18,13 @@ public class AuthService : IAuthService
     private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration; 
 
-    public AuthService(IUserRepository userRepository, IConfiguration configuration)
+    private readonly IPlaylistRepository _playlistRepository;
+
+    public AuthService(IUserRepository userRepository, IConfiguration configuration, IPlaylistRepository playlistRepository)
     {
         _userRepository = userRepository;
         _configuration = configuration;
+        _playlistRepository = playlistRepository;
     }
 
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto request)
@@ -61,7 +64,19 @@ public class AuthService : IAuthService
         };
 
         await _userRepository.AddAsync(newUser);
+        // ===== AUTO CREATE LIKED PLAYLIST =====
+        var likedPlaylist = new Playlist
+        {
+            Id = Guid.NewGuid(),
+            UserId = newUser.UserId,
+            PlaylistName = "Liked Songs",
+            PlaylistType = PlaylistType.Liked,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
 
+        await _playlistRepository.AddAsync(likedPlaylist);
+        await _playlistRepository.SaveChangesAsync();
         string token = GenerateJwtToken(newUser);
 
         return new AuthResponseDto

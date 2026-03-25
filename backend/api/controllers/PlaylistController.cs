@@ -15,7 +15,10 @@ using Chillify.Application.DTOs;
 public class PlaylistController : ControllerBase
 {
     private readonly IPlaylistService _playlistService;
-    public PlaylistController(IPlaylistService playlistService) => _playlistService = playlistService;
+    public PlaylistController(IPlaylistService playlistService)
+    {
+        _playlistService = playlistService;
+    }
 
     private Guid CurrentUserId => Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
 
@@ -25,8 +28,15 @@ public class PlaylistController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetDetail(Guid id)
     {
-        var result = await _playlistService.GetPlaylistDetailAsync(id);
-        return result == null ? NotFound("Playlist not found.") : Ok(result);
+        try
+        {
+            var result = await _playlistService.GetPlaylistDetailAsync(CurrentUserId, id);
+            return result == null ? NotFound("Playlist not found.") : Ok(result);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message });
+        }
     }
 
     [HttpPost]
@@ -46,8 +56,12 @@ public class PlaylistController : ControllerBase
     {
         try
         {
-            var result = await _playlistService.GetSongsInPlaylistAsync(id, "USER");
+            var result = await _playlistService.GetSongsInPlaylistAsync(CurrentUserId, id, "USER");
             return Ok(result);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
@@ -55,19 +69,25 @@ public class PlaylistController : ControllerBase
         }
     }
 
+
     [HttpGet("{id}/liked-songs")]
     public async Task<IActionResult> GetLikedPlaylistSongs(Guid id)
     {
         try
         {
-            var result = await _playlistService.GetSongsInPlaylistAsync(id, "LIKED");
+            var result = await _playlistService.GetSongsInPlaylistAsync(CurrentUserId, id, "LIKED");
             return Ok(result);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
             return BadRequest(new { message = ex.Message });
         }
     }
+
 
     [HttpPost("{id}/songs")]
     public async Task<IActionResult> AddSongToPlaylist(
@@ -76,8 +96,12 @@ public class PlaylistController : ControllerBase
     {
         try
         {
-            await _playlistService.AddSongToPlaylistAsync(id, request.SongId);
+            await _playlistService.AddSongToPlaylistAsync(CurrentUserId, id, request.SongId);
             return NoContent();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
@@ -90,15 +114,17 @@ public class PlaylistController : ControllerBase
     {
         try
         {
-            await _playlistService.RemoveSongFromPlaylistAsync(playlistId, songId);
+            await _playlistService.RemoveSongFromPlaylistAsync(CurrentUserId, playlistId, songId);
             return NoContent();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
             return BadRequest(new { message = ex.Message });
         }
     }
-
-
 
 }

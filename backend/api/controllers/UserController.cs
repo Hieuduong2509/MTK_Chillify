@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Chillify.Application.Interfaces.Services;
 using Chillify.Application.DTOs.User;
-
+using System.Security.Claims;
 namespace Chillify.Api.Controllers;
 [Authorize]
 [ApiController]
@@ -17,12 +17,15 @@ public class UserController : ControllerBase
     {
         _userService = userService;
     }
-
+    private Guid CurrentUserId => Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? Guid.Empty.ToString());
     [HttpGet("{userId}/profile")]
     public async Task<IActionResult> GetProfile(Guid userId)
     {
         try
         {
+            if (userId != CurrentUserId)
+                return StatusCode(403, new { message = "Access denied" });
+
             var response = await _userService.GetProfileAsync(userId);
             return Ok(response);
         }
@@ -37,6 +40,9 @@ public class UserController : ControllerBase
     {
         try
         {
+            if (userId != CurrentUserId)
+                return StatusCode(403, new { message = "Access denied" });
+
             var response = await _userService.UpdateProfileAsync(userId, request);
             return Ok(response);
         }
@@ -51,6 +57,9 @@ public class UserController : ControllerBase
     {
         try
         {
+            if (userId != CurrentUserId)
+                return StatusCode(403, new { message = "Access denied" });
+
             await _userService.ChangePasswordAsync(userId, request);
             return Ok(new { message = "Password changed successfully!" });
         }
