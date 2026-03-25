@@ -182,3 +182,7 @@ export const playlists: Playlist[] = [
     songs: trendingSongs.slice(0, 5),
   },
 ];
+
+// ============= LIKED-SONGS PLAYLIST =============
+
+export const likedSongs: Song[] = trendingSongs.slice(0, 6);
