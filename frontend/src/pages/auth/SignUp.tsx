@@ -1,8 +1,55 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, redirect, useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
+import { useAuth } from "../../context/AuthContext";
 
 const SignUp = () => {
+  const { signup, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e: any) => {
+    setForm({
+      ...form,
+      [e.target.type === "email"
+        ? "email"
+        : e.target.placeholder.includes("name")
+          ? "fullName"
+          : e.target.placeholder.includes("Confirm")
+            ? "confirmPassword"
+            : "password"]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    if (form.password !== form.confirmPassword) {
+      alert("Password does not match!");
+      return;
+    }
+
+    try {
+      await signup({
+        fullName: form.fullName,
+        email: form.email,
+        password: form.password,
+      });
+
+      alert("Sign up successful!");
+
+      navigate("/");
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
   return (
     <div className="bg-background-dark min-h-screen flex items-center justify-center font-display antialiased p-4">
       <div className="w-full max-w-[440px] flex flex-col items-center">
@@ -16,7 +63,7 @@ const SignUp = () => {
           </div>
 
           {/* Form */}
-          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Full Name Input*/}
             <div className="flex flex-col gap-2">
               <label className="text-slate-200 text-sm font-semibold leading-normal">
@@ -30,6 +77,7 @@ const SignUp = () => {
                   className="flex w-full rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/20 border border-slate-700 bg-slate-800/50 focus:border-primary h-12 pl-12 pr-4 placeholder:text-slate-500 text-base font-normal transition-all"
                   placeholder="Enter your name"
                   type="text"
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -47,6 +95,7 @@ const SignUp = () => {
                   className="flex w-full rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/20 border border-slate-700 bg-slate-800/50 focus:border-primary h-12 pl-12 pr-4 placeholder:text-slate-500 text-base font-normal transition-all"
                   placeholder="Enter your email"
                   type="email"
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -64,6 +113,7 @@ const SignUp = () => {
                   className="flex w-full rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/20 border border-slate-700 bg-slate-800/50 focus:border-primary h-12 pl-12 pr-4 placeholder:text-slate-500 text-base font-normal transition-all"
                   placeholder="Create a password"
                   type="password"
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -80,21 +130,26 @@ const SignUp = () => {
                   className="flex w-full rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/20 border border-slate-700 bg-slate-800/50 focus:border-primary h-12 pl-12 pr-4 placeholder:text-slate-500 text-base font-normal transition-all"
                   placeholder="Confirm your password"
                   type="password"
+                  onChange={handleChange}
                 />
               </div>
             </div>
             {/* Actions */}
             <div className="pt-3 space-y-5">
-              <button className="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-[#1088e8] text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors shadow-md shadow-primary/10">
-                <span className="truncate">Sign Up</span>
+              <button
+                type="submit"
+                className="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-[#1088e8] text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors shadow-md shadow-primary/10"
+              >
+                <span className="truncate">
+                  {loading ? "Signing up..." : "Sign Up"}
+                </span>
               </button>
 
               <div className="text-center">
                 <p className="text-slate-400 text-sm font-medium">
                   Already have an account?
-                  {/* Link chuyển ngược lại trang Login */}
                   <Link
-                    className="text-primary hover:text-[#1088e8] font-bold ml-1 transition-colors"
+                    className="text-primary hover:text-hover font-bold ml-1 transition-colors"
                     to="/login"
                   >
                     Login
