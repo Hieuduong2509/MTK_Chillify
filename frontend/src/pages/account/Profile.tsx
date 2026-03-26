@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const Profile = () => {
-  const { getProfile, loading } = useAuth();
+  const { getProfile, updateProfile, loading } = useAuth();
   const [form, setForm] = useState({
     fullName: "",
     phoneNumber: "",
@@ -26,7 +26,7 @@ const Profile = () => {
 
         setForm({
           fullName: data.fullName,
-          phoneNumber: "",
+          phoneNumber: data.phoneNumber || "",
           email: data.email,
         });
       } catch (err: any) {
@@ -37,9 +37,20 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
-  if (loading) {
-    return <div className="text-white text-center">Loading...</div>;
-  }
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      await updateProfile({
+        fullName: form.fullName,
+        phoneNumber: form.phoneNumber,
+      });
+
+      alert("Profile updated successfully!");
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
 
   return (
     <div className="flex-1 overflow-y-auto bg-background-dark h-full">
@@ -74,7 +85,10 @@ const Profile = () => {
         </section>
 
         {/* Form Section */}
-        <div className="bg-sidebar-dark/40 rounded-xl p-8 border border-white/5 flex flex-col gap-6 shadow-xl">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-sidebar-dark/40 rounded-xl p-8 border border-white/5 flex flex-col gap-6 shadow-xl"
+        >
           {/* Full Name */}
           <div className="flex flex-col gap-2">
             <label className="flex flex-col w-full">
@@ -82,13 +96,12 @@ const Profile = () => {
                 Full Name
               </p>
               <input
-                name="fullname"
+                name="fullName"
                 value={form.fullName}
                 onChange={handleChange}
                 className="w-full bg-[#1b2227] border border-white/10 rounded-lg h-14 px-4 text-base text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 placeholder="John Doe"
                 type="text"
-                defaultValue="Alex Peterson"
               />
             </label>
           </div>
@@ -106,7 +119,6 @@ const Profile = () => {
                 className="w-full bg-[#1b2227] border border-white/10 rounded-lg h-14 px-4 text-base text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 placeholder="0123456789"
                 type="tel"
-                defaultValue="+1 234 567 890"
               />
             </label>
           </div>
@@ -128,11 +140,14 @@ const Profile = () => {
 
           {/* Save Button */}
           <div className="flex justify-center mt-4">
-            <button className="w-full sm:w-auto min-w-[160px] bg-primary hover:bg-[#3996e0] text-white font-bold py-3 px-10 rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center cursor-pointer active:scale-95">
-              Save Changes
+            <button
+              type="submit"
+              className="w-full sm:w-auto min-w-40 bg-primary hover:bg-[#3996e0] text-white font-bold py-3 px-10 rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center cursor-pointer active:scale-95"
+            >
+              {loading ? "Saving..." : "Save Changes"}
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

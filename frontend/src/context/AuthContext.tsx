@@ -19,6 +19,10 @@ interface AuthContextType {
   }) => Promise<void>;
   login: (data: { email: string; password: string }) => Promise<void>;
   getProfile: () => Promise<User>;
+  updateProfile: (data: {
+    fullName: string;
+    phoneNumber: string;
+  }) => Promise<void>;
   logout: () => void;
 }
 
@@ -34,6 +38,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token"),
   );
+
+  // ===== UPDATE PROFILE =====
+  const updateProfile = async (data: {
+    fullName: string;
+    phoneNumber: string;
+  }) => {
+    setLoading(true);
+
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) throw new Error("User not found in localStorage");
+
+      const { userId } = JSON.parse(storedUser);
+
+      const res = await apiRequest("user", `/${userId}/profile`, {
+        method: "PUT",
+        body: data,
+      });
+
+      const updatedUser = {
+        userId: res.userId,
+        fullName: res.fullName,
+        email: res.email,
+        phoneNumber: res.phoneNumber,
+      };
+      setUser(updatedUser);
+
+      // update localStorage
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    } catch (err: any) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ===== GET PROFILE =====
   const getProfile = async (): Promise<User> => {
@@ -140,7 +179,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, signup, logout, loading, getProfile }}
+      value={{
+        user,
+        token,
+        login,
+        signup,
+        logout,
+        loading,
+        getProfile,
+        updateProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>
