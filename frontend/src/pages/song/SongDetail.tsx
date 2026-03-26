@@ -41,29 +41,6 @@ const SongDetail = () => {
     player.play(song);
   };
 
-  // const song = useMemo(
-  //   () => trendingSongs.find((s) => s.id === Number(id)),
-  //   [id],
-  // );
-
-  // if (!song) {
-  //   return <div className="px-8 py-10 text-white">Song not found</div>;
-  // }
-
-  // const handlePlay = () => {
-  //   player.loadPlaylist(trendingSongs);
-  //   player.play(song);
-  // };
-
-  // const toggleLike = (songId: number) => {
-  //   setLikedSongs((prev) => ({
-  //     ...prev,
-  //     [songId]: !prev[songId],
-  //   }));
-  // };
-
-  // const isMainSongLiked = likedSongs[song.id];
-
   return (
     <>
       <div className="px-8 pt-10 pb-32 text-white bg-linear-to-b from-primary/5 to-transparent">
@@ -152,7 +129,13 @@ const SongDetail = () => {
         {/* UP NEXT */}
         <div className="mt-16">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Up Next</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold">Up Next</h2>
+              {/* Spinner */}
+              {loading && (
+                <div className="w-5 h-5 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
+              )}
+            </div>
 
             <button className="text-sm font-bold text-gray-400 hover:text-primary uppercase tracking-wider cursor-pointer">
               Show All
