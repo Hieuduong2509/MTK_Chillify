@@ -1,7 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Account = () => {
+  const { getProfile } = useAuth();
+  const [fullName, setFullName] = useState<String>();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await getProfile();
+
+        setFullName(data.fullName);
+      } catch (err: any) {
+        alert(err.message);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   return (
     <div className="flex-1 overflow-y-auto bg-background-dark h-full">
       <div className="max-w-4xl mx-auto px-8 py-8 flex flex-col gap-10">
@@ -29,9 +47,7 @@ const Account = () => {
                 className="w-16 h-16 rounded-full object-cover border border-white/10 shadow-lg"
               />
               <div className="text-center sm:text-left">
-                <h3 className="font-medium text-white text-lg">
-                  Alex Peterson
-                </h3>
+                <h3 className="font-medium text-white text-lg">{fullName}</h3>
                 <p className="text-slate-400 text-sm">Manage your profile</p>
               </div>
             </div>

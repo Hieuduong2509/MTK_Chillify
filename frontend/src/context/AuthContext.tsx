@@ -5,6 +5,7 @@ interface User {
   userId: string;
   fullName: string;
   email: string;
+  phoneNumber?: string;
 }
 
 interface AuthContextType {
@@ -17,6 +18,7 @@ interface AuthContextType {
     password: string;
   }) => Promise<void>;
   login: (data: { email: string; password: string }) => Promise<void>;
+  getProfile: () => Promise<User>;
   logout: () => void;
 }
 
@@ -32,6 +34,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token"),
   );
+
+  // ===== GET PROFILE =====
+  const getProfile = async (): Promise<User> => {
+    setLoading(true);
+
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) throw new Error("User not found in localStorage");
+
+      const { userId } = JSON.parse(storedUser);
+
+      const res = await apiRequest("user", `/${userId}/profile`, {
+        method: "GET",
+      });
+
+      const userData = {
+        userId: res.userId,
+        fullName: res.fullName,
+        email: res.email,
+        phoneNumber: res.phoneNumber,
+      };
+      setUser(userData);
+
+      // update localStorage
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      return userData;
+    } catch (err: any) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ===== LOGIN =====
   const login = async (data: { email: string; password: string }) => {
@@ -95,6 +130,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // ===== LOGOUT =====
   const logout = () => {
+    alert("Logging out...");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
@@ -104,7 +140,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, signup, logout, loading }}
+      value={{ user, token, login, signup, logout, loading, getProfile }}
     >
       {children}
     </AuthContext.Provider>
