@@ -6,16 +6,33 @@ import { useSong } from "../../context/SongContext";
 import { useEffect } from "react";
 
 const Home = () => {
-  const { songsByType, getSongsByType, loading } = useSong();
+  const {
+    getSongs,
+    songsByType,
+    getSongsByType,
+    loadingByType,
+    loadingGlobal,
+  } = useSong();
   const navigate = useNavigate();
   const isMobile = useMediaQuery({ maxWidth: 640 });
   const MAX_SONG_ITEM = isMobile ? 4 : 6;
 
   useEffect(() => {
-    // TODO: Gọi hàm gọi endpoint GET /songs (cho await)
-    sections.forEach((section) => {
-      getSongsByType(section.id);
-    });
+    const fetchData = async () => {
+      try {
+        // Sync DB từ Jamendo
+        await getSongs();
+
+        // Fetch các section song song
+        await Promise.all(
+          sections.map((section) => getSongsByType(section.id)),
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
@@ -27,9 +44,16 @@ const Home = () => {
         return (
           <section key={`home-section-${section.id}`}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                {section.title}
-              </h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-2xl font-bold text-white">
+                  {section.title}
+                </h2>
+                {/* Spinner */}
+                {loadingByType[section.id] && (
+                  <div className="w-5 h-5 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
+                )}
+              </div>
+
               <button
                 className="text-primary text-sm font-semibold hover:underline cursor-pointer"
                 onClick={() => navigate(`/section/${section.id}`)}
@@ -38,7 +62,8 @@ const Home = () => {
               </button>
             </div>
 
-            {loading && songs.length === 0 ? (
+            {(loadingGlobal || loadingByType[section.id]) &&
+            songs.length === 0 ? (
               <p className="text-white">Loading...</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">

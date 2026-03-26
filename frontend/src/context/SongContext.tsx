@@ -11,10 +11,13 @@ interface Song {
 
 interface SongContextType {
   loading: boolean;
+  loadingGlobal: boolean;
   songsByType: Record<string, Song[]>;
   currentSong: Song | null;
+  getSongs: () => Promise<void>;
   getSongsByType: (type: string) => Promise<void>;
   getSongDetail: (id: string) => Promise<void>;
+  loadingByType: Record<string, boolean>;
 }
 
 const mapSong = (s: any): Song => ({
@@ -31,6 +34,30 @@ export const SongProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [songsByType, setSongsByType] = useState<Record<string, Song[]>>({});
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [loadingGlobal, setLoadingGlobal] = useState(false);
+  const [loadingByType, setLoadingByType] = useState<Record<string, boolean>>(
+    {},
+  );
+
+  // ===== GET SONG FROM API =====
+  const getSongs = async () => {
+    if (isInitialized) return;
+
+    setLoadingGlobal(true);
+
+    try {
+      await apiRequest("song", "/songs");
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      setIsInitialized(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingGlobal(false);
+    }
+  };
 
   // ===== GET SONG DETAIL =====
   const getSongDetail = async (id: string) => {
@@ -55,7 +82,11 @@ export const SongProvider = ({ children }: { children: React.ReactNode }) => {
 
   // ===== GET SONGS BY TYPE =====
   const getSongsByType = async (type: string) => {
-    setLoading(true);
+    // setLoading(true);
+    setLoadingByType((prev) => ({
+      ...prev,
+      [type]: true,
+    }));
 
     try {
       const res = await apiRequest("song", `/song-section`, {
@@ -72,7 +103,11 @@ export const SongProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (err: any) {
       console.error(err);
     } finally {
-      setLoading(false);
+      // setLoading(false);
+      setLoadingByType((prev) => ({
+        ...prev,
+        [type]: false,
+      }));
     }
   };
 
@@ -81,9 +116,12 @@ export const SongProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         songsByType,
         loading,
+        getSongs,
         getSongsByType,
         currentSong,
         getSongDetail,
+        loadingByType,
+        loadingGlobal,
       }}
     >
       {children}
