@@ -23,6 +23,10 @@ interface AuthContextType {
     fullName: string;
     phoneNumber: string;
   }) => Promise<void>;
+  changePassword: (data: {
+    oldPassword: string;
+    newPassword: string;
+  }) => Promise<void>;
   logout: () => void;
 }
 
@@ -38,6 +42,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token"),
   );
+
+  // ===== CHANGE PASSWORD =====
+  const changePassword = async (data: {
+    oldPassword: string;
+    newPassword: string;
+  }) => {
+    setLoading(true);
+
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (!storedUser) throw new Error("User not found");
+
+      const { userId } = JSON.parse(storedUser);
+
+      await apiRequest("user", `/${userId}/change-password`, {
+        method: "PUT",
+        body: data,
+      });
+    } catch (err: any) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ===== UPDATE PROFILE =====
   const updateProfile = async (data: {
@@ -188,6 +216,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         loading,
         getProfile,
         updateProfile,
+        changePassword,
       }}
     >
       {children}

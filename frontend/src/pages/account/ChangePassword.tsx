@@ -1,10 +1,59 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const ChangePassword = () => {
+  const { changePassword, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    // validate
+    if (!form.oldPassword || !form.newPassword || !form.confirmPassword) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    if (form.newPassword !== form.confirmPassword) {
+      alert("New password does not match!");
+      return;
+    }
+
+    try {
+      await changePassword({
+        oldPassword: form.oldPassword,
+        newPassword: form.newPassword,
+      });
+
+      alert(
+        "Password changed successfully! Please login again with your new password!",
+      );
+
+      navigate("/login");
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
   return (
     <div className="flex-1 overflow-y-auto bg-background-dark h-full">
-      <div className="max-w-[600px] mx-auto px-6 py-12 flex flex-col gap-8">
+      <div className="max-w-150 mx-auto px-6 py-12 flex flex-col gap-8">
         {/* Header with Back Button */}
         <div className="flex flex-col gap-2">
           <Link
@@ -20,10 +69,7 @@ const ChangePassword = () => {
 
         {/* Form Container */}
         <div className="bg-sidebar-dark/40 rounded-xl p-8 border border-white/5 shadow-xl">
-          <form
-            className="flex flex-col gap-6"
-            onSubmit={(e) => e.preventDefault()}
-          >
+          <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
             {/* Current Password */}
             <div className="flex flex-col gap-2">
               <label
@@ -37,6 +83,9 @@ const ChangePassword = () => {
                 id="current-password"
                 placeholder="Enter current password"
                 type="password"
+                name="oldPassword"
+                value={form.oldPassword}
+                onChange={handleChange}
               />
             </div>
 
@@ -53,6 +102,9 @@ const ChangePassword = () => {
                 id="new-password"
                 placeholder="Enter new password"
                 type="password"
+                name="newPassword"
+                value={form.newPassword}
+                onChange={handleChange}
               />
             </div>
 
@@ -69,6 +121,9 @@ const ChangePassword = () => {
                 id="confirm-password"
                 placeholder="Confirm new password"
                 type="password"
+                name="confirmPassword"
+                value={form.confirmPassword}
+                onChange={handleChange}
               />
             </div>
 
@@ -77,8 +132,9 @@ const ChangePassword = () => {
               <button
                 className="w-full bg-primary hover:bg-[#3996e0] text-white py-3 rounded-lg font-bold transition-colors text-base cursor-pointer shadow-lg shadow-primary/20"
                 type="submit"
+                disabled={loading}
               >
-                Change Password
+                {loading ? "Changing..." : "Change Password"}
               </button>
             </div>
           </form>
