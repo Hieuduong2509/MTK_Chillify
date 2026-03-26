@@ -12,6 +12,7 @@ const Home = () => {
   const MAX_SONG_ITEM = isMobile ? 4 : 6;
 
   useEffect(() => {
+    // TODO: Gọi hàm gọi endpoint GET /songs (cho await)
     sections.forEach((section) => {
       getSongsByType(section.id);
     });
@@ -46,19 +47,6 @@ const Home = () => {
                 ))}
               </div>
             )}
-            {/* <div
-              className="grid
-              grid-cols-1
-              sm:grid-cols-3
-              md:grid-cols-4
-              lg:grid-cols-6
-              gap-4
-              pb-4"
-            >
-              {previewSongs.map((song) => (
-                <SongCard key={`song-${song.id}`} song={song} />
-              ))}
-            </div> */}
           </section>
         );
       })}
