@@ -1,40 +1,68 @@
 import { useParams } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { trendingSongs } from "../../assets/dummyDB";
 import { player } from "../../core/player/Player";
-import DropdownMenu from "../../components/common/DropdownMenu";
 import AddSongToPlaylistModal from "../../components/playlist/AddSongToPlaylistModal";
+import { useSong } from "../../context/SongContext";
 
 const SongDetail = () => {
-  const [isLiked, setIsLiked] = useState(false);
+  const { currentSong, getSongDetail, loading, songsByType } = useSong();
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState<any>(null);
-  const [likedSongs, setLikedSongs] = useState<Record<number, boolean>>({});
-
+  const [likedSongs, setLikedSongs] = useState<Record<string, boolean>>({});
+  const upNextSongs = songsByType["trending"] || [];
   const { id } = useParams<{ id: string }>();
 
-  const song = useMemo(
-    () => trendingSongs.find((s) => s.id === Number(id)),
-    [id],
-  );
+  useEffect(() => {
+    if (id) {
+      getSongDetail(id);
+    }
+  }, [id]);
 
-  if (!song) {
-    return <div className="px-8 py-10 text-white">Song not found</div>;
+  if (loading) {
+    return <div className="text-white p-10">Loading...</div>;
   }
 
-  const handlePlay = () => {
-    player.loadPlaylist(trendingSongs);
-    player.play(song);
-  };
+  if (!currentSong) {
+    return <div className="text-white p-10">Song not found</div>;
+  }
 
-  const toggleLike = (songId: number) => {
+  const song = currentSong;
+  const isMainSongLiked = likedSongs[song.id];
+
+  const toggleLike = (songId: string) => {
     setLikedSongs((prev) => ({
       ...prev,
       [songId]: !prev[songId],
     }));
   };
 
-  const isMainSongLiked = likedSongs[song.id];
+  const handlePlay = () => {
+    player.play(song);
+  };
+
+  // const song = useMemo(
+  //   () => trendingSongs.find((s) => s.id === Number(id)),
+  //   [id],
+  // );
+
+  // if (!song) {
+  //   return <div className="px-8 py-10 text-white">Song not found</div>;
+  // }
+
+  // const handlePlay = () => {
+  //   player.loadPlaylist(trendingSongs);
+  //   player.play(song);
+  // };
+
+  // const toggleLike = (songId: number) => {
+  //   setLikedSongs((prev) => ({
+  //     ...prev,
+  //     [songId]: !prev[songId],
+  //   }));
+  // };
+
+  // const isMainSongLiked = likedSongs[song.id];
 
   return (
     <>
@@ -86,7 +114,7 @@ const SongDetail = () => {
               <button
                 title="Play song"
                 onClick={handlePlay}
-                className="flex h-12 min-w-[140px] items-center justify-center gap-2 rounded-full bg-primary px-8 font-bold text-black shadow-lg shadow-primary/20 hover:bg-hover transition-all active:scale-95 cursor-pointer"
+                className="flex h-12 min-w-35 items-center justify-center gap-2 rounded-full bg-primary px-8 font-bold text-black shadow-lg shadow-primary/20 hover:bg-hover transition-all active:scale-95 cursor-pointer"
               >
                 <span className="material-symbols-outlined fill-current">
                   play_arrow
@@ -106,6 +134,7 @@ const SongDetail = () => {
                 <span className="material-symbols-outlined text-2xl">add</span>
               </button>
 
+              {/* Like */}
               <button
                 title={isMainSongLiked ? "Unlike this song" : "Like this song"}
                 onClick={() => toggleLike(song.id)}
@@ -131,7 +160,7 @@ const SongDetail = () => {
           </div>
 
           <div className="flex flex-col gap-1">
-            {trendingSongs
+            {upNextSongs
               .filter((s) => s.id !== song.id)
               .slice(0, 3)
               .map((nextSong, index) => {
@@ -151,7 +180,6 @@ const SongDetail = () => {
                     <img
                       className="h-12 w-12 rounded bg-cover bg-center"
                       src={nextSong.image}
-                      alt=""
                     />
 
                     {/* Info */}

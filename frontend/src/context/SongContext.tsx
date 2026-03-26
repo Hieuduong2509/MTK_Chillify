@@ -10,9 +10,11 @@ interface Song {
 }
 
 interface SongContextType {
-  songsByType: Record<string, Song[]>;
   loading: boolean;
+  songsByType: Record<string, Song[]>;
+  currentSong: Song | null;
   getSongsByType: (type: string) => Promise<void>;
+  getSongDetail: (id: string) => Promise<void>;
 }
 
 const mapSong = (s: any): Song => ({
@@ -26,8 +28,30 @@ const mapSong = (s: any): Song => ({
 const SongContext = createContext<SongContextType | undefined>(undefined);
 
 export const SongProvider = ({ children }: { children: React.ReactNode }) => {
-  const [songsByType, setSongsByType] = useState<Record<string, Song[]>>({});
   const [loading, setLoading] = useState(false);
+  const [songsByType, setSongsByType] = useState<Record<string, Song[]>>({});
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
+
+  // ===== GET SONG DETAIL =====
+  const getSongDetail = async (id: string) => {
+    setLoading(true);
+
+    try {
+      const res = await apiRequest("song", `/${id}`, {
+        method: "GET",
+      });
+
+      const mappedSong = mapSong(res);
+
+      setCurrentSong(mappedSong);
+    } catch (err: any) {
+      console.error(err);
+      setCurrentSong(null);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ===== GET SONGS BY TYPE =====
   const getSongsByType = async (type: string) => {
@@ -53,7 +77,15 @@ export const SongProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <SongContext.Provider value={{ songsByType, loading, getSongsByType }}>
+    <SongContext.Provider
+      value={{
+        songsByType,
+        loading,
+        getSongsByType,
+        currentSong,
+        getSongDetail,
+      }}
+    >
       {children}
     </SongContext.Provider>
   );
