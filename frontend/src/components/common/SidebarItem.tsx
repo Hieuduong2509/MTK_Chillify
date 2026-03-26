@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 interface BaseProps {
   icon: string;
@@ -11,12 +12,23 @@ type SidebarItemProps =
   | (BaseProps & { path: string; danger?: false });
 
 export default function SidebarItem(props: SidebarItemProps) {
+  const { logout } = useAuth();
   const { icon, label, isCollapsed } = props;
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    try {
+      logout();
+      navigate("/login");
+    } catch (error) {
+      alert("Logout fail: " + error);
+    }
+  };
 
   if ("danger" in props && props.danger) {
     return (
       <div
-        onClick={() => alert("Logging out...")}
+        onClick={handleLogout}
         className="
           flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer
           text-slate-400 hover:text-red-400 hover:bg-red-500/10
