@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import type { Song } from "../assets/dummyDB";
+import type { Song } from "../../assets/dummyDB";
 
 interface SongCardProps {
   song: Song;
@@ -11,7 +11,6 @@ export default function SongCard({ song }: SongCardProps) {
       to={`/song/${song.id}`}
       className="group space-y-3 cursor-pointer block"
     >
-
       <div className="relative aspect-square w-full rounded-xl overflow-hidden shadow-lg bg-slate-200 dark:bg-border-dark">
         <img
           src={song.image}
@@ -38,6 +37,5 @@ export default function SongCard({ song }: SongCardProps) {
         </p>
       </div>
     </Link>
-
   );
 }
