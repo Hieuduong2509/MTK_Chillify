@@ -143,7 +143,6 @@ const SongDetail = () => {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <h2 className="text-2xl font-bold">Up Next</h2>
-              {/* Spinner */}
               {loading && (
                 <div className="w-5 h-5 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
               )}

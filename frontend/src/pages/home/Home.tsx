@@ -46,7 +46,6 @@ const Home = () => {
                 <h2 className="text-2xl font-bold text-white">
                   {section.title}
                 </h2>
-                {/* Spinner */}
                 {loadingByType[section.id] && (
                   <div className="w-5 h-5 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
                 )}
