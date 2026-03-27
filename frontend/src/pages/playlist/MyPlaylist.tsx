@@ -7,7 +7,9 @@ import ConfirmDeleteModal from "../../components/common/ConfirmDeleteModal";
 
 const MyPlaylist = () => {
   const { playlists, deletePlaylist, createPlaylist, updatePlaylist } = usePlaylist();
-
+  const visiblePlaylists = playlists.filter(
+   p => p.playlistType !== 'LIKED' && p.playlistName !== 'Liked Songs'
+  );
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [mode, setMode] = useState<"create" | "edit">("create");
@@ -50,9 +52,9 @@ const MyPlaylist = () => {
           </button>
         </div>
 
-        {/* Playlist List */}
+        {}
         <div className="divide-y divide-white/5">
-          {playlists.map((playlist) => (
+          {visiblePlaylists.map((playlist) => (
             <div
               key={playlist.id}
               className="relative flex items-center justify-between py-4 hover:bg-white/5 px-2 rounded-lg transition-all duration-300"

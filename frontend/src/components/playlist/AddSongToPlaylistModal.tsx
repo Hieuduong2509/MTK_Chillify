@@ -33,7 +33,10 @@ const AddSongToPlaylistModal = ({ isOpen, song, onClose }: any) => {
                 <div className="w-10 h-10 bg-neutral-800 rounded flex items-center justify-center text-xl">🎵</div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-medium truncate">{p.playlistName}</p>
-                  <p className="text-xs text-gray-500">{p.songs?.length || 0} songs</p>
+                  
+                  {}
+                  <p className="text-xs text-gray-500">{p.songCount || 0} songs</p>
+                  
                 </div>
               </div>
             ))
@@ -44,4 +47,4 @@ const AddSongToPlaylistModal = ({ isOpen, song, onClose }: any) => {
   );
 };
 
-export default AddSongToPlaylistModal; 
+export default AddSongToPlaylistModal;

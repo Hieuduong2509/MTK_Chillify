@@ -1,9 +1,10 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react'; // THÊM useEffect VÀO ĐÂY
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { apiRequest } from '../api/api'; 
 
 interface Song {
   songId: string;
   name: string;
+  artistName?: string;
   audioUrl?: string;
   songImage?: string;
   duration?: string;
@@ -22,6 +23,10 @@ interface PlaylistContextType {
   playlists: Playlist[];
   currentPlaylist: Playlist | null;
   loading: boolean;
+  
+  likedSongIds: string[]; 
+  toggleLikeSong: (songId: string) => Promise<void>; 
+
   fetchPlaylists: () => Promise<void>;
   fetchPlaylistDetail: (id: string) => Promise<void>;
   createPlaylist: (name: string, desc: string) => Promise<void>;
@@ -38,6 +43,8 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const [likedSongIds, setLikedSongIds] = useState<string[]>([]);
+
   const fetchPlaylists = useCallback(async () => {
     setLoading(true);
     try {
@@ -47,13 +54,49 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     finally { setLoading(false); }
   }, []);
 
-
   useEffect(() => {
     if (localStorage.getItem("token")) {
       fetchPlaylists();
     }
   }, [fetchPlaylists]); 
-  // ==========================================
+
+  const likedPlaylist = playlists.find(p => p.playlistType === 'LIKED' || p.playlistName === 'Liked Songs');
+
+  useEffect(() => {
+    const fetchLikedSongs = async () => {
+      if (likedPlaylist && localStorage.getItem("token")) {
+        try {
+          const songs = await apiRequest<Song[]>('playlist', `/${likedPlaylist.id}/liked-songs`);
+          setLikedSongIds(songs.map(s => s.songId));
+        } catch (error) { 
+          console.error("Lỗi lấy danh sách bài hát yêu thích:", error); 
+        }
+      }
+    };
+    fetchLikedSongs();
+  }, [likedPlaylist]);
+
+  const toggleLikeSong = async (songId: string) => {
+    if (!likedPlaylist) {
+      alert("Hệ thống chưa tạo Playlist 'Liked Songs' cho tài khoản của bạn!");
+      return;
+    }
+
+    const isLiked = likedSongIds.includes(songId);
+
+    try {
+      if (isLiked) {
+        await removeSongFromPlaylist(likedPlaylist.id, songId);
+        setLikedSongIds(prev => prev.filter(id => id !== songId));
+      } else {
+        await apiRequest('playlist', `/${likedPlaylist.id}/songs/${songId}`, { method: 'POST' });
+        await fetchPlaylists(); 
+        setLikedSongIds(prev => [...prev, songId]);
+      }
+    } catch (error) {
+      console.error("Lỗi khi thay đổi trạng thái yêu thích:", error);
+    }
+  };
 
   const fetchPlaylistDetail = async (id: string) => {
     setLoading(true);
@@ -115,6 +158,9 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   return (
     <PlaylistContext.Provider value={{ 
       playlists, currentPlaylist, loading, 
+      
+      likedSongIds, toggleLikeSong, 
+      
       fetchPlaylists, fetchPlaylistDetail, createPlaylist, 
       updatePlaylist, deletePlaylist, removeSongFromPlaylist,
       addSongToPlaylist 
