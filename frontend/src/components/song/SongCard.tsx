@@ -49,7 +49,7 @@ const SongCard = ({ song }: { song: any }) => {
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
           <button
             onClick={handlePlay}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-black shadow-xl hover:scale-105 hover:bg-hover transition-all"
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-black shadow-xl hover:scale-105 hover:bg-hover transition-all cursor-pointer"
           >
             <span className="material-symbols-outlined fill-current text-2xl">
               play_arrow
@@ -65,15 +65,14 @@ const SongCard = ({ song }: { song: any }) => {
         <p className="text-sm text-gray-400 truncate">{song.artist}</p>
       </div>
 
-      {/* 4. NÚT TRÁI TIM CHUẨN XỊN */}
       <button
-        onClick={handleLikeClick} // GỌI HÀM VỪA SỬA LẠI
+        onClick={handleLikeClick}
         title={isLiked ? "Unlike" : "Like"}
-        className={`absolute top-5 right-5 z-10 p-2 rounded-full backdrop-blur-sm transition-all duration-300
+        className={`absolute flex items-center justify-center top-5 right-5 z-10 p-2 rounded-full backdrop-blur-sm transition-all duration-300 cursor-pointer
           ${
             isLiked
-              ? "bg-primary text-black opacity-100 scale-110" // Sáng rực rỡ nếu đã Like
-              : "bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:text-primary" // Tàng hình nếu chưa Like
+              ? "bg-primary text-black opacity-100 scale-110"
+              : "bg-black/40 text-white opacity-0 group-hover:opacity-100 hover:text-primary"
           }`}
       >
         <span
