@@ -70,7 +70,7 @@ const MyPlaylist = () => {
                     {playlist.playlistName}
                   </h3>
                   
-                  {/* SỬA ĐÚNG DÒNG NÀY: Dùng playlist.songCount thay vì playlist.songs?.length */}
+                  {}
                   <p className="text-sm text-gray-400">
                     {playlist.songCount || 0} songs
                   </p>
