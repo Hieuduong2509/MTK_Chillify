@@ -62,10 +62,10 @@ const Home = () => {
 
             {(loadingGlobal || loadingByType[section.id]) &&
             songs.length === 0 ? (
-              <>
+              <div className="flex items-center gap-2">
                 <p className="text-white">Loading...</p>
                 <div className="w-5 h-5 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
-              </>
+              </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {previewSongs.map((song) => (

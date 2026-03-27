@@ -7,6 +7,8 @@ interface Song {
   artist: string;
   image: string;
   audioUrl: string;
+  duration?: number;
+  releaseDate?: string;
 }
 
 interface SongContextType {
@@ -26,6 +28,8 @@ const mapSong = (s: any): Song => ({
   artist: s.artistName,
   image: s.songImage,
   audioUrl: s.audioUrl,
+  duration: s.duration,
+  releaseDate: s.releaseDate,
 });
 
 const SongContext = createContext<SongContextType | undefined>(undefined);

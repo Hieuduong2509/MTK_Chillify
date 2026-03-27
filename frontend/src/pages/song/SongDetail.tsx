@@ -41,6 +41,20 @@ const SongDetail = () => {
     player.play(song);
   };
 
+  const formatDuration = (seconds?: number) => {
+    if (!seconds) return "--:--";
+
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const formatYear = (date?: string) => {
+    if (!date) return "Unknown";
+    return new Date(date).getFullYear();
+  };
+
   return (
     <>
       <div className="px-8 pt-10 pb-32 text-white bg-linear-to-b from-primary/5 to-transparent">
@@ -78,11 +92,9 @@ const SongDetail = () => {
               <div className="mt-2 flex flex-wrap items-center gap-2 text-gray-400 text-sm">
                 <span className="font-semibold text-white">{song.artist}</span>
                 <span>•</span>
-                <span>Trending Collection</span>
+                <span>{formatYear(song.releaseDate)}</span>
                 <span>•</span>
-                <span>2024</span>
-                <span>•</span>
-                <span>3:45</span>
+                <span>{formatDuration(song.duration)}</span>
               </div>
             </div>
 
