@@ -4,7 +4,7 @@ import type { AxiosRequestConfig } from "axios";
 /**
  * Base URL
  */
-const BASE_URL = "http://localhost:5088/api";
+const BASE_URL = "http://localhost:5088/api"; // Bạn nhớ check lại port xem khớp với backend chưa nhé
 
 /**
  * Services mapping theo Controller backend
@@ -45,6 +45,7 @@ export async function apiRequest<T = any>(
       method: options.method || "GET",
       headers: {
         "Content-Type": "application/json",
+        // Lấy token mới nhất từ localStorage mỗi lần gọi
         Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
         ...(options.headers || {}),
       },
@@ -56,6 +57,22 @@ export async function apiRequest<T = any>(
     return response.data;
   } catch (err: any) {
     console.error("API Error:", err.response || err.message);
+
+    // ==========================================
+    // ĐOẠN XỬ LÝ TOKEN HẾT HẠN HOẶC BỊ LỖI (401)
+    // ==========================================
+    if (err.response && err.response.status === 401) {
+      // 1. Xóa sạch token và thông tin user cũ
+      localStorage.removeItem("token");
+      localStorage.removeItem("user"); 
+      
+      // 2. Đá văng về trang login
+      // Lưu ý: Nếu bạn đang ở trang login rồi thì không cần redirect để tránh lặp vô tận
+      if (window.location.pathname !== '/login') {
+         window.location.href = '/login';
+      }
+    }
+    // ==========================================
 
     throw {
       status_code: err.response?.status || 500,

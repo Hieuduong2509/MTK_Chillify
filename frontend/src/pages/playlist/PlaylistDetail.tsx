@@ -1,7 +1,7 @@
-import { useParams } from "react-router-dom";
-import { playlists } from "../../assets/dummyDB";
+import { useParams, useNavigate } from "react-router-dom";
 import { player } from "../../core/player/Player";
 import { useEffect, useState } from "react";
+import { usePlaylist } from "../../context/PlaylistContext";
 import DropdownMenu from "../../components/common/DropdownMenu";
 import ConfirmDeleteModal from "../../components/common/ConfirmDeleteModal";
 import PlaylistModal from "../../components/playlist/PlaylistModal";
@@ -11,11 +11,11 @@ const PlaylistDetail = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [mode, setMode] = useState<"create" | "edit">("create");
-  const [openSongMenu, setOpenSongMenu] = useState<number | null>(null);
+  const [openSongMenu, setOpenSongMenu] = useState<string | null>(null);
   const [confirmState, setConfirmState] = useState<{
     isOpen: boolean;
     type: "delete-playlist" | "remove-song" | null;
-    songId?: number;
+    songId?: string;
   }>({
     isOpen: false,
     type: null,
@@ -24,90 +24,87 @@ const PlaylistDetail = () => {
   const [selectedSong, setSelectedSong] = useState<any>(null);
 
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  
+  const { currentPlaylist, fetchPlaylistDetail, deletePlaylist, updatePlaylist, removeSongFromPlaylist, loading } = usePlaylist();
 
-  const playlist = playlists.find((p) => p.id === id);
+  useEffect(() => {
+    if (id) {
+      fetchPlaylistDetail(id);
+    }
+  }, [id]);
 
-  if (!playlist) {
-    return <div className="px-8 py-10 text-white">Playlist not found</div>;
-  }
+
+  const mapToPlayerSong = (s: any) => ({
+    id: s.songId,
+    title: s.name,
+    artist: "Unknown Artist", 
+    image: s.songImage || "",
+    audio: s.audioUrl || "",
+    duration: s.duration || "0:00"
+  });
 
   const handlePlayAll = () => {
-    if (playlist.songs.length === 0) return;
-    player.loadPlaylist(playlist.songs);
-    player.play(playlist.songs[0]);
+    if (!currentPlaylist?.songs || currentPlaylist.songs.length === 0) return;
+    const playerSongs = currentPlaylist.songs.map(mapToPlayerSong);
+    player.loadPlaylist(playerSongs);
+    player.play(playerSongs[0]);
   };
 
   const handlePlaySong = (song: any) => {
-    player.loadPlaylist(playlist.songs);
-    player.play(song);
+    if (!currentPlaylist?.songs) return;
+    const playerSongs = currentPlaylist.songs.map(mapToPlayerSong);
+    const targetSong = mapToPlayerSong(song);
+    player.loadPlaylist(playerSongs);
+    player.play(targetSong);
   };
+
+  const onConfirmAction = async () => {
+    if (confirmState.type === "delete-playlist" && id) {
+      await deletePlaylist(id);
+      navigate("/playlist"); 
+    } else if (confirmState.type === "remove-song" && id && confirmState.songId) {
+      await removeSongFromPlaylist(id, confirmState.songId);
+    }
+    setConfirmState({ isOpen: false, type: null });
+  };
+
+
+  if (loading) return <div className="px-8 py-10 text-white">Loading playlist...</div>;
+  if (!currentPlaylist) return <div className="px-8 py-10 text-white">Playlist not found</div>;
 
   return (
     <>
       <div className="px-8 pt-6 pb-24 text-white">
         {/* HEADER */}
         <section className="flex flex-col md:flex-row gap-8 items-start md:items-end">
-          {/* Cover */}
           <div className="shrink-0">
-            <img
-              className="w-48 h-48 md:w-64 md:h-64 rounded-xl shadow-2xl bg-cover bg-center"
-              src={playlist.cover}
-              alt=""
-            />
+            <div className="w-48 h-48 md:w-64 md:h-64 rounded-xl shadow-2xl bg-neutral-800 flex items-center justify-center text-6xl">
+              
+            </div>
           </div>
 
-          {/* Info */}
           <div className="flex flex-col gap-2 mb-2">
-            <span className="text-xs font-bold uppercase tracking-widest text-primary">
-              Playlist
-            </span>
-
-            <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight">
-              {playlist.name}
-            </h1>
-
-            {playlist.description && (
-              <p className="text-gray-400 max-w-2xl">{playlist.description}</p>
-            )}
-
+            <span className="text-xs font-bold uppercase tracking-widest text-primary">Playlist</span>
+            <h1 className="text-4xl md:text-7xl font-extrabold tracking-tight">{currentPlaylist.playlistName}</h1>
+            {currentPlaylist.description && <p className="text-gray-400 max-w-2xl">{currentPlaylist.description}</p>}
             <div className="flex items-center gap-2 text-sm text-white/90 mt-2">
-              <span className="font-bold">MusicStream</span>
+              <span className="font-bold">Chillify</span>
               <span className="text-gray-500">•</span>
-              <span>{playlist.songs.length} songs</span>
+              <span>{currentPlaylist.songs?.length || 0} songs</span>
             </div>
           </div>
         </section>
 
         {/* ACTION BUTTONS */}
         <section className="flex items-center gap-6 mt-8 mb-6">
-          <button
-            title="Play all songs"
-            onClick={handlePlayAll}
-            className="w-14 h-14 flex items-center justify-center rounded-full bg-primary text-black hover:scale-105 transition shadow-lg shadow-primary/30"
-          >
-            <span className="material-symbols-outlined text-4xl fill-icon cursor-pointer">
-              play_arrow
-            </span>
-          </button>
-
-          <button
-            title="Download playlist audio"
-            className="text-gray-400 hover:text-primary transition cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-3xl">
-              download_for_offline
-            </span>
+          <button onClick={handlePlayAll} className="w-14 h-14 flex items-center justify-center rounded-full bg-primary text-black hover:scale-105 transition shadow-lg shadow-primary/30 cursor-pointer">
+            <span className="material-symbols-outlined text-4xl fill-icon">play_arrow</span>
           </button>
 
           <div className="relative">
-            <button
-              title="More actions"
-              onClick={() => setOpenMenu(!openMenu)}
-              className="text-gray-400 hover:text-primary transition cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-3xl">
-                more_horiz
-              </span>
+            <button onClick={() => setOpenMenu(!openMenu)} className="text-gray-400 hover:text-primary transition cursor-pointer">
+              <span className="material-symbols-outlined text-3xl">more_horiz</span>
             </button>
 
             {openMenu && (
@@ -117,21 +114,13 @@ const PlaylistDetail = () => {
                   {
                     label: "Edit details",
                     icon: "edit",
-                    onClick: () => {
-                      setMode("edit");
-                      setIsOpenModal(true);
-                    },
+                    onClick: () => { setMode("edit"); setIsOpenModal(true); setOpenMenu(false); },
                   },
                   {
                     label: "Delete playlist",
                     icon: "delete",
                     variant: "danger",
-                    onClick: () => {
-                      setConfirmState({
-                        isOpen: true,
-                        type: "delete-playlist",
-                      });
-                    },
+                    onClick: () => { setConfirmState({ isOpen: true, type: "delete-playlist" }); setOpenMenu(false); },
                   },
                 ]}
               />
@@ -140,15 +129,10 @@ const PlaylistDetail = () => {
         </section>
 
         {/* TABLE HEADER */}
-        <div
-          className="grid grid-cols-[auto_1fr_auto]
-        md:grid-cols-[auto_1fr_1fr_auto]
-        lg:grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 px-4 py-3 border-b border-white/10 text-gray-400 text-xs font-bold uppercase tracking-wider"
-        >
+        <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1fr_1fr_auto] lg:grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 px-4 py-3 border-b border-white/10 text-gray-400 text-xs font-bold uppercase tracking-wider">
           <div className="w-8 text-center">#</div>
           <div>Title</div>
-          {/* <div className="hidden md:block">Album</div> */}
-          <div className="hidden lg:block">Date Added</div>
+          <div className="hidden lg:block">Status</div>
           <div className="hidden lg:block w-16 text-right">
             <span className="material-symbols-outlined text-sm">schedule</span>
           </div>
@@ -157,97 +141,43 @@ const PlaylistDetail = () => {
 
         {/* SONG LIST */}
         <div className="mt-2 flex flex-col">
-          {playlist.songs.map((song, index) => (
-            <div
-              key={song.id}
-              className="grid grid-cols-[auto_1fr_auto]
-          md:grid-cols-[auto_1fr_1fr_auto]
-          lg:grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 px-4 py-3 items-center rounded-lg hover:bg-white/5 group transition cursor-pointer"
-            >
-              {/* Number / Play */}
-              <div className="w-8 text-center text-gray-500 text-sm group-hover:hidden">
-                {index + 1}
+          {currentPlaylist.songs?.map((song, index) => (
+            <div key={song.songId} className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1fr_1fr_auto] lg:grid-cols-[auto_1fr_1fr_1fr_auto] gap-4 px-4 py-3 items-center rounded-lg hover:bg-white/5 group transition cursor-pointer">
+              <div className="w-8 text-center text-gray-500 text-sm group-hover:hidden">{index + 1}</div>
+              <div className="w-8 text-center text-primary hidden group-hover:block" onClick={() => handlePlaySong(song)}>
+                <span className="material-symbols-outlined text-base fill-icon">play_arrow</span>
               </div>
 
-              <div className="w-8 text-center text-primary hidden group-hover:block">
-                <span className="material-symbols-outlined text-base fill-icon">
-                  play_arrow
-                </span>
-              </div>
-
-              {/* Title */}
-              <div
-                onClick={() => handlePlaySong(song)}
-                className="flex items-center gap-4"
-              >
-                <img
-                  className="w-10 h-10 rounded bg-cover bg-center shrink-0"
-                  src={song.image}
-                  alt=""
-                />
-
+              <div className="flex items-center gap-4" onClick={() => handlePlaySong(song)}>
+                <img className="w-10 h-10 rounded bg-cover bg-center shrink-0" src={song.songImage || ""} alt="" />
                 <div className="flex flex-col min-w-0">
-                  <span className="text-white text-sm font-semibold truncate group-hover:text-primary transition-all duration-300">
-                    {song.title}
-                  </span>
-                  <span className="text-gray-400 text-xs truncate">
-                    {song.artist}
-                  </span>
+                  <span className="text-white text-sm font-semibold truncate group-hover:text-primary transition-all">{song.name}</span>
+                  <span className="text-gray-400 text-xs truncate">Unknown Artist</span>
                 </div>
               </div>
 
-              {/* Album */}
-              {/* <div className="hidden md:block text-gray-400 text-sm truncate">
-              —
-            </div> */}
+              <div className="hidden lg:block text-gray-400 text-sm truncate">Added</div>
+              <div className="hidden lg:block w-16 text-right text-gray-400 text-sm">{song.duration || "--:--"}</div>
 
-              {/* Date */}
-              <div className="hidden lg:block text-gray-400 text-sm truncate">
-                —
-              </div>
-
-              {/* Duration */}
-              <div className="hidden lg:block w-16 text-right text-gray-400 text-sm">
-                3:45
-              </div>
-
-              {/* Action menu */}
               <div className="relative flex justify-end">
-                <button
-                  onClick={() =>
-                    setOpenSongMenu(openSongMenu === song.id ? null : song.id)
-                  }
-                  className="transition text-gray-400 hover:text-white cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-xl">
-                    more_horiz
-                  </span>
+                <button onClick={() => setOpenSongMenu(openSongMenu === song.songId ? null : song.songId)} className="transition text-gray-400 hover:text-white cursor-pointer">
+                  <span className="material-symbols-outlined text-xl">more_horiz</span>
                 </button>
 
-                {openSongMenu === song.id && (
+                {openSongMenu === song.songId && (
                   <DropdownMenu
                     className="right-0 top-full mt-2"
                     items={[
                       {
                         label: "Add to other playlist",
                         icon: "playlist_add",
-                        onClick: () => {
-                          setSelectedSong(song);
-                          setIsOpenAddModal(true);
-                          setOpenSongMenu(null);
-                        },
+                        onClick: () => { setSelectedSong(song); setIsOpenAddModal(true); setOpenSongMenu(null); },
                       },
                       {
                         label: "Remove from this playlist",
                         icon: "delete",
                         variant: "danger",
-                        onClick: () => {
-                          setConfirmState({
-                            isOpen: true,
-                            type: "remove-song",
-                            songId: song.id,
-                          });
-                        },
+                        onClick: () => { setConfirmState({ isOpen: true, type: "remove-song", songId: song.songId }); setOpenSongMenu(null); },
                       },
                     ]}
                   />
@@ -261,42 +191,27 @@ const PlaylistDetail = () => {
       <PlaylistModal
         isOpen={isOpenModal}
         mode={mode}
-        initialData={{
-          id: playlist.id,
-          name: playlist.name,
-          description: playlist.description || "",
-        }}
+        initialData={{ id: currentPlaylist.id, name: currentPlaylist.playlistName, description: currentPlaylist.description || "" }}
         onClose={() => setIsOpenModal(false)}
-        onSubmit={(data) => {
-          console.log("UPDATE PLAYLIST", data);
+        onSubmit={async (data) => {
+          await updatePlaylist(currentPlaylist.id, data.name, data.description);
+          setIsOpenModal(false);
         }}
       />
 
       <ConfirmDeleteModal
         isOpen={confirmState.isOpen}
-        title={
-          confirmState.type === "delete-playlist"
-            ? "Delete Playlist"
-            : "Remove Song"
-        }
-        description={
-          confirmState.type === "delete-playlist"
-            ? "Do you want to delete this playlist?"
-            : "Remove this song from playlist?"
-        }
-        confirmText={
-          confirmState.type === "delete-playlist" ? "Delete" : "Remove"
-        }
+        title={confirmState.type === "delete-playlist" ? "Delete Playlist" : "Remove Song"}
+        description={confirmState.type === "delete-playlist" ? "Do you want to delete this playlist?" : "Remove this song from playlist?"}
+        confirmText={confirmState.type === "delete-playlist" ? "Delete" : "Remove"}
         onClose={() => setConfirmState({ isOpen: false, type: null })}
+        onConfirm={onConfirmAction}
       />
 
       <AddSongToPlaylistModal
         isOpen={isOpenAddModal}
         song={selectedSong}
-        onClose={() => {
-          setIsOpenAddModal(false);
-          setSelectedSong(null);
-        }}
+        onClose={() => { setIsOpenAddModal(false); setSelectedSong(null); }}
       />
     </>
   );

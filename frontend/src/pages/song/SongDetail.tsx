@@ -1,40 +1,78 @@
 import { useParams } from "react-router-dom";
-import { useMemo, useState } from "react";
-import { trendingSongs } from "../../assets/dummyDB";
+import { useState, useEffect } from "react";
+// 1. XÓA DÒNG IMPORT DUMMY DATA:
+// import { trendingSongs } from "../../assets/dummyDB";
 import { player } from "../../core/player/Player";
 import DropdownMenu from "../../components/common/DropdownMenu";
 import AddSongToPlaylistModal from "../../components/playlist/AddSongToPlaylistModal";
+
+// 2. IMPORT HÀM GỌI API (Đảm bảo đường dẫn này đúng với file api.ts của bạn)
+import { apiRequest } from "../../api/api"; 
 
 const SongDetail = () => {
   const [isLiked, setIsLiked] = useState(false);
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState<any>(null);
-  const [likedSongs, setLikedSongs] = useState<Record<number, boolean>>({});
+  
+  // Đổi thành Record<string, boolean> vì UUID là chuỗi
+  const [likedSongs, setLikedSongs] = useState<Record<string, boolean>>({}); 
+
+  // 3. STATE LƯU DỮ LIỆU THẬT
+  const [song, setSong] = useState<any>(null);
+  const [upNextSongs, setUpNextSongs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const { id } = useParams<{ id: string }>();
 
-  const song = useMemo(
-    () => trendingSongs.find((s) => s.id === Number(id)),
-    [id],
-  );
+  // 4. FETCH DỮ LIỆU TỪ BACKEND
+  useEffect(() => {
+    const fetchSongData = async () => {
+      setLoading(true);
+      try {
+        // Lấy chi tiết bài hát chính
+        const songDetail = await apiRequest("song", `/${id}`);
+        setSong(songDetail);
+
+        // Lấy danh sách bài hát cho phần "Up Next" (Tạm lấy tất cả rồi lọc bài hiện tại)
+        const allSongs = await apiRequest<any[]>("song", "/songs");
+        const nextSongs = allSongs.filter(s => s.songId !== id).slice(0, 3);
+        setUpNextSongs(nextSongs);
+
+      } catch (error) {
+        console.error("Lỗi tải bài hát:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchSongData();
+    }
+  }, [id]);
+
+  if (loading) {
+    return <div className="px-8 py-10 text-white">Đang tải bài hát...</div>;
+  }
 
   if (!song) {
     return <div className="px-8 py-10 text-white">Song not found</div>;
   }
 
   const handlePlay = () => {
-    player.loadPlaylist(trendingSongs);
+    // Đưa bài hiện tại và danh sách up next vào player
+    player.loadPlaylist([song, ...upNextSongs]);
     player.play(song);
   };
 
-  const toggleLike = (songId: number) => {
+  const toggleLike = (songId: string) => {
     setLikedSongs((prev) => ({
       ...prev,
       [songId]: !prev[songId],
     }));
   };
 
-  const isMainSongLiked = likedSongs[song.id];
+  // Dùng .songId thay vì .id
+  const isMainSongLiked = likedSongs[song.songId];
 
   return (
     <>
@@ -43,10 +81,11 @@ const SongDetail = () => {
         <div className="flex flex-col md:flex-row md:items-end gap-10">
           {/* COVER */}
           <div className="relative group">
+            {/* Đổi thành song.songImage */}
             <img
-              className="w-48 h-48 md:w-64 md:h-64 rounded-xl bg-cover bg-center shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
-              src={song.image}
-              alt=""
+              className="w-48 h-48 md:w-64 md:h-64 rounded-xl bg-cover bg-center shadow-2xl transition-transform duration-300 group-hover:scale-[1.02] bg-gray-800"
+              src={song.songImage || "https://placehold.co/400x400/1f2937/fff?text=No+Image"} 
+              alt={song.name}
             />
 
             <div
@@ -66,12 +105,14 @@ const SongDetail = () => {
                 Single
               </span>
 
+              {/* Đổi thành song.name */}
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-                {song.title}
+                {song.name} 
               </h1>
 
               <div className="mt-2 flex flex-wrap items-center gap-2 text-gray-400 text-sm">
-                <span className="font-semibold text-white">{song.artist}</span>
+                {/* Đổi thành song.artistName */}
+                <span className="font-semibold text-white">{song.artistName || 'Unknown'}</span>
                 <span>•</span>
                 <span>Trending Collection</span>
                 <span>•</span>
@@ -108,7 +149,7 @@ const SongDetail = () => {
 
               <button
                 title={isMainSongLiked ? "Unlike this song" : "Like this song"}
-                onClick={() => toggleLike(song.id)}
+                onClick={() => toggleLike(song.songId)}
                 className={`flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer
                   ${isMainSongLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
               >
@@ -131,77 +172,75 @@ const SongDetail = () => {
           </div>
 
           <div className="flex flex-col gap-1">
-            {trendingSongs
-              .filter((s) => s.id !== song.id)
-              .slice(0, 3)
-              .map((nextSong, index) => {
-                const isNextSongLiked = likedSongs[nextSong.id];
+            {upNextSongs.map((nextSong, index) => {
+              const isNextSongLiked = likedSongs[nextSong.songId];
 
-                return (
-                  <div
-                    key={nextSong.id}
-                    className="group flex items-center gap-4 rounded-xl p-3 hover:bg-[#19282E]/50 transition-colors cursor-pointer"
-                  >
-                    {/* Index */}
-                    <div className="hidden lg:flex w-8 justify-center text-gray-400 group-hover:text-white">
-                      {index + 1}
-                    </div>
-
-                    {/* Image */}
-                    <img
-                      className="h-12 w-12 rounded bg-cover bg-center"
-                      src={nextSong.image}
-                      alt=""
-                    />
-
-                    {/* Info */}
-                    <div
-                      onClick={() => {
-                        player.loadPlaylist(trendingSongs);
-                        player.play(nextSong);
-                      }}
-                      className="flex flex-1 flex-col"
-                    >
-                      <p className="text-sm font-bold text-white hover:text-primary transition-all duration-300">
-                        {nextSong.title}
-                      </p>
-                      <p className="text-xs text-gray-400">{nextSong.artist}</p>
-                    </div>
-
-                    {/* Add */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedSong(nextSong);
-                        setIsOpenAddModal(true);
-                      }}
-                      className="flex h-12 w-12 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-2xl">
-                        add
-                      </span>
-                    </button>
-
-                    {/* Like */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleLike(nextSong.id);
-                      }}
-                      className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
-                        ${
-                          isNextSongLiked
-                            ? "text-primary scale-110"
-                            : "text-gray-400 hover:text-primary"
-                        }`}
-                    >
-                      <span className="material-symbols-outlined text-2xl">
-                        favorite
-                      </span>
-                    </button>
+              return (
+                <div
+                  key={nextSong.songId}
+                  className="group flex items-center gap-4 rounded-xl p-3 hover:bg-[#19282E]/50 transition-colors cursor-pointer"
+                >
+                  <div className="hidden lg:flex w-8 justify-center text-gray-400 group-hover:text-white">
+                    {index + 1}
                   </div>
-                );
-              })}
+
+                  <img
+                    className="h-12 w-12 rounded bg-cover bg-center bg-gray-800"
+                    src={nextSong.songImage || "https://placehold.co/100x100/1f2937/fff?text=No+Image"}
+                    alt={nextSong.name}
+                  />
+
+                  <div
+                    onClick={() => {
+                      player.loadPlaylist([song, ...upNextSongs]);
+                      player.play(nextSong);
+                    }}
+                    className="flex flex-1 flex-col"
+                  >
+                    <p className="text-sm font-bold text-white hover:text-primary transition-all duration-300">
+                      {nextSong.name}
+                    </p>
+                    <p className="text-xs text-gray-400">{nextSong.artistName || 'Unknown'}</p>
+                  </div>
+
+                  {/* Add Modal */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSong(nextSong);
+                      setIsOpenAddModal(true);
+                    }}
+                    className="flex h-12 w-12 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 cursor-pointer opacity-0 group-hover:opacity-100"
+                  >
+                    <span className="material-symbols-outlined text-2xl">
+                      add
+                    </span>
+                  </button>
+
+                  {/* Like */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleLike(nextSong.songId);
+                    }}
+                    className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
+                      ${
+                        isNextSongLiked
+                          ? "text-primary scale-110"
+                          : "text-gray-400 hover:text-primary"
+                      }`}
+                  >
+                    <span className="material-symbols-outlined text-2xl">
+                      favorite
+                    </span>
+                  </button>
+                </div>
+              );
+            })}
+            
+            {upNextSongs.length === 0 && (
+               <p className="text-gray-500 text-sm">Chưa có bài hát nào khác trong hệ thống.</p>
+            )}
           </div>
         </div>
       </div>

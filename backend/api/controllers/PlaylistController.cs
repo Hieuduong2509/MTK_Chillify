@@ -89,15 +89,15 @@ public class PlaylistController : ControllerBase
     }
 
 
-    [HttpPost("{id}/songs")]
-    public async Task<IActionResult> AddSongToPlaylist(
-        Guid id,
-        [FromBody] AddSongToPlaylistRequestDto request)
+    // SỬA DÒNG NÀY: Khớp URL với Frontend (chứa cả playlistId và songId)
+    [HttpPost("{playlistId}/songs/{songId}")]
+    public async Task<IActionResult> AddSongToPlaylist(Guid playlistId, Guid songId)
     {
         try
         {
-            await _playlistService.AddSongToPlaylistAsync(CurrentUserId, id, request.SongId);
-            return NoContent();
+            // Truyền trực tiếp songId vào, bỏ cái RequestDto đi
+            await _playlistService.AddSongToPlaylistAsync(CurrentUserId, playlistId, songId);
+            return NoContent(); // Thành công
         }
         catch (UnauthorizedAccessException ex)
         {

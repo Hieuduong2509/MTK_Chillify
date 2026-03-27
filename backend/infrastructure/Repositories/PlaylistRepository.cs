@@ -83,6 +83,7 @@ public class PlaylistRepository : IPlaylistRepository
 
     public async Task<IEnumerable<Playlist>> GetByUserIdAsync(Guid userId) => 
         await _context.Playlists
+            .Include(p => p.PlaylistSongs)      
             .Where(p => p.UserId == userId)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();

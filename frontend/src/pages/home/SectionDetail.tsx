@@ -1,21 +1,55 @@
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { homeSections } from "../../assets/assets";
 import SongCard from "../../components/song/SongCard";
+import { apiRequest } from "../../api/api"; 
 
 const SectionDetail = () => {
   const { sectionId } = useParams();
-  const section = homeSections.find((s) => s.id.toString() === sectionId);
+  const [section, setSection] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!section) {
-    return <div className="text-lg">Section not found!</div>;
-  }
+  useEffect(() => {
+    const fetchSectionDetail = async () => {
+      setLoading(true);
+      try {
+        
+        const data = await apiRequest<any[]>('song', `/song-section?type=${sectionId}`);
+        
+        const formattedSongs = data.map(s => ({
+          ...s,
+          id: s.songId,
+          title: s.name,
+          artist: s.artistName || 'Unknown Artist',
+          image: s.songImage || 'https://placehold.co/400x400/1f2937/fff?text=No+Image'
+        }));
+
+        setSection({
+          id: sectionId,
+
+          title: sectionId === 'trending' ? 'Trending Now' : 'For You', 
+          songs: formattedSongs
+        });
+      } catch (error) {
+        console.error("Lỗi lấy chi tiết danh sách:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (sectionId) {
+      fetchSectionDetail();
+    }
+  }, [sectionId]);
+
+  if (loading) return <div className="p-10 text-white">Đang tải danh sách...</div>;
+  if (!section || section.songs.length === 0) return <div className="p-10 text-white">Section không có bài hát nào!</div>;
 
   return (
     <div className="flex flex-col overflow-hidden">
       <div className="max-w-350 px-4 py-4 lg:p-10">
         <div className="flex items-end justify-between mb-8 flex-wrap gap-1.5">
           <div>
-            <h1 className="text-lg lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-lg lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight uppercase">
               {section.title}
             </h1>
           </div>
@@ -30,13 +64,12 @@ const SectionDetail = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-8">
-          {/* Song card */}
-          {section.songs.map((song) => (
+          {/* Render Song card*/}
+          {section.songs.map((song: any) => (
             <SongCard key={song.id} song={song} />
           ))}
         </div>
 
-        {/* Load more results */}
         <div className="flex justify-center mt-12 mb-20">
           <button className="px-8 py-3 bg-slate-200 dark:bg-surface-dark text-slate-900 dark:text-white font-bold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-800 transition-colors cursor-pointer">
             Load More Results
