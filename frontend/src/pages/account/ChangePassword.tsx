@@ -130,11 +130,18 @@ const ChangePassword = () => {
             {/* Submit Button */}
             <div className="pt-4">
               <button
-                className="w-full bg-primary hover:bg-[#3996e0] text-white py-3 rounded-lg font-bold transition-colors text-base cursor-pointer shadow-lg shadow-primary/20"
+                className="w-full bg-primary hover:bg-[#3996e0] text-white font-bold py-3 px-10 rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-70"
                 type="submit"
                 disabled={loading}
               >
-                {loading ? "Changing..." : "Change Password"}
+                {loading ? (
+                  <>
+                    <span>Changing...</span>
+                    <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                  </>
+                ) : (
+                  "Change Password"
+                )}
               </button>
             </div>
           </form>

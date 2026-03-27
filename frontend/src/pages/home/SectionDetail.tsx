@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { player } from "../../core/player/Player";
 
 const SectionDetail = () => {
-  const { songsByType, getSongsByType, loading } = useSong();
+  const { songsByType, getSongsByType, loadingByType } = useSong();
   const { sectionId } = useParams<{ sectionId: string }>();
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const SectionDetail = () => {
 
   const title = sectionTitleMap[sectionId || ""] || "Section";
 
-  if (loading && songs.length === 0) {
+  if (sectionId && loadingByType[sectionId] && songs.length === 0) {
     return <div className="text-white p-10">Loading...</div>;
   }
 
@@ -41,10 +41,14 @@ const SectionDetail = () => {
     <div className="flex flex-col overflow-hidden">
       <div className="px-4 py-4 lg:p-10">
         <div className="flex items-end justify-between mb-8 flex-wrap gap-1.5">
-          <div>
+          <div className="flex items-center gap-3">
             <h1 className="text-lg lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
               {title}
             </h1>
+
+            {sectionId && loadingByType[sectionId] && (
+              <div className="w-5 h-5 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
+            )}
           </div>
           <div className="flex gap-2">
             <button

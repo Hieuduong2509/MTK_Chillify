@@ -92,10 +92,15 @@ const Login = () => {
 
             {/* Actions */}
             <div className="pt-3 space-y-5">
-              <button className="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-hover text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors shadow-md shadow-primary/10">
-                <span className="truncate">
-                  {loading ? "Logging in..." : "Login"}
-                </span>
+              <button className="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-hover text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors shadow-md shadow-primary/10">
+                {loading ? (
+                  <>
+                    <span>Logging in...</span>
+                    <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                  </>
+                ) : (
+                  "Login"
+                )}
               </button>
 
               <div className="text-center">

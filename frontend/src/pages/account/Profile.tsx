@@ -142,9 +142,17 @@ const Profile = () => {
           <div className="flex justify-center mt-4">
             <button
               type="submit"
-              className="w-full sm:w-auto min-w-40 bg-primary hover:bg-[#3996e0] text-white font-bold py-3 px-10 rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center cursor-pointer active:scale-95"
+              disabled={loading}
+              className="w-full sm:w-auto min-w-40 bg-primary hover:bg-[#3996e0] text-white font-bold py-3 px-10 rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-70"
             >
-              {loading ? "Saving..." : "Save Changes"}
+              {loading ? (
+                <>
+                  <span>Saving...</span>
+                  <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                </>
+              ) : (
+                "Save Changes"
+              )}
             </button>
           </div>
         </form>

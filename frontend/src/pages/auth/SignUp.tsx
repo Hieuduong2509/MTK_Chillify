@@ -140,9 +140,14 @@ const SignUp = () => {
                 type="submit"
                 className="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-[#1088e8] text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors shadow-md shadow-primary/10"
               >
-                <span className="truncate">
-                  {loading ? "Signing up..." : "Sign Up"}
-                </span>
+                {loading ? (
+                  <>
+                    <span>Signing up...</span>
+                    <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                  </>
+                ) : (
+                  "Sign up"
+                )}
               </button>
 
               <div className="text-center">
