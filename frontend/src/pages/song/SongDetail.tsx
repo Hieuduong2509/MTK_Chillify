@@ -1,40 +1,59 @@
 import { useParams } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { trendingSongs } from "../../assets/dummyDB";
 import { player } from "../../core/player/Player";
-import DropdownMenu from "../../components/common/DropdownMenu";
 import AddSongToPlaylistModal from "../../components/playlist/AddSongToPlaylistModal";
+import { useSong } from "../../context/SongContext";
 
 const SongDetail = () => {
-  const [isLiked, setIsLiked] = useState(false);
+  const { currentSong, getSongDetail, loading, songsByType } = useSong();
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState<any>(null);
-  const [likedSongs, setLikedSongs] = useState<Record<number, boolean>>({});
-
+  const [likedSongs, setLikedSongs] = useState<Record<string, boolean>>({});
+  const upNextSongs = songsByType["trending"] || [];
   const { id } = useParams<{ id: string }>();
 
-  const song = useMemo(
-    () => trendingSongs.find((s) => s.id === Number(id)),
-    [id],
-  );
+  useEffect(() => {
+    if (id) {
+      getSongDetail(id);
+    }
+  }, [id]);
 
-  if (!song) {
-    return <div className="px-8 py-10 text-white">Song not found</div>;
+  if (loading) {
+    return <div className="text-white p-10">Loading...</div>;
   }
 
-  const handlePlay = () => {
-    player.loadPlaylist(trendingSongs);
-    player.play(song);
-  };
+  if (!currentSong) {
+    return <div className="text-white p-10">Song not found</div>;
+  }
 
-  const toggleLike = (songId: number) => {
+  const song = currentSong;
+  const isMainSongLiked = likedSongs[song.id];
+
+  const toggleLike = (songId: string) => {
     setLikedSongs((prev) => ({
       ...prev,
       [songId]: !prev[songId],
     }));
   };
 
-  const isMainSongLiked = likedSongs[song.id];
+  const handlePlay = () => {
+    player.play(song);
+  };
+
+  const formatDuration = (seconds?: number) => {
+    if (!seconds) return "--:--";
+
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const formatYear = (date?: string) => {
+    if (!date) return "Unknown";
+    return new Date(date).getFullYear();
+  };
 
   return (
     <>
@@ -73,11 +92,9 @@ const SongDetail = () => {
               <div className="mt-2 flex flex-wrap items-center gap-2 text-gray-400 text-sm">
                 <span className="font-semibold text-white">{song.artist}</span>
                 <span>•</span>
-                <span>Trending Collection</span>
+                <span>{formatYear(song.releaseDate)}</span>
                 <span>•</span>
-                <span>2024</span>
-                <span>•</span>
-                <span>3:45</span>
+                <span>{formatDuration(song.duration)}</span>
               </div>
             </div>
 
@@ -86,7 +103,7 @@ const SongDetail = () => {
               <button
                 title="Play song"
                 onClick={handlePlay}
-                className="flex h-12 min-w-[140px] items-center justify-center gap-2 rounded-full bg-primary px-8 font-bold text-black shadow-lg shadow-primary/20 hover:bg-hover transition-all active:scale-95 cursor-pointer"
+                className="flex h-12 min-w-35 items-center justify-center gap-2 rounded-full bg-primary px-8 font-bold text-black shadow-lg shadow-primary/20 hover:bg-hover transition-all active:scale-95 cursor-pointer"
               >
                 <span className="material-symbols-outlined fill-current">
                   play_arrow
@@ -106,6 +123,7 @@ const SongDetail = () => {
                 <span className="material-symbols-outlined text-2xl">add</span>
               </button>
 
+              {/* Like */}
               <button
                 title={isMainSongLiked ? "Unlike this song" : "Like this song"}
                 onClick={() => toggleLike(song.id)}
@@ -123,7 +141,12 @@ const SongDetail = () => {
         {/* UP NEXT */}
         <div className="mt-16">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Up Next</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold">Up Next</h2>
+              {loading && (
+                <div className="w-5 h-5 border-3 border-primary border-t-transparent rounded-full animate-spin"></div>
+              )}
+            </div>
 
             <button className="text-sm font-bold text-gray-400 hover:text-primary uppercase tracking-wider cursor-pointer">
               Show All
@@ -131,7 +154,7 @@ const SongDetail = () => {
           </div>
 
           <div className="flex flex-col gap-1">
-            {trendingSongs
+            {upNextSongs
               .filter((s) => s.id !== song.id)
               .slice(0, 3)
               .map((nextSong, index) => {
@@ -151,7 +174,6 @@ const SongDetail = () => {
                     <img
                       className="h-12 w-12 rounded bg-cover bg-center"
                       src={nextSong.image}
-                      alt=""
                     />
 
                     {/* Info */}

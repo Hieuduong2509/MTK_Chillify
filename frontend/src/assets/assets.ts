@@ -1,7 +1,7 @@
-import { forYouSongs, popularSongs, trendingSongs } from "./dummyDB";
 import logo from "./remove_bg.png";
 import logo2 from "./7_cut.png";
 import like_songs_img from "./liked_songs_img.png";
+import { trendingSongs } from "./dummyDB";
 
 // ============= SIDEBAR ITEMS =============
 
@@ -39,14 +39,20 @@ export const homeSections = [
     title: "Trendings",
     songs: trendingSongs,
   },
-  {
-    id: 2,
-    title: "For you",
-    songs: forYouSongs,
-  },
-  {
-    id: 3,
-    title: "Popular",
-    songs: popularSongs,
-  },
+  // {
+  //   id: 2,
+  //   title: "New",
+  //   songs: forYouSongs,
+  // },
+  // {
+  //   id: 3,
+  //   title: "Discover",
+  //   songs: popularSongs,
+  // },
+];
+
+export const sections = [
+  { id: "trending", title: "Trending" },
+  { id: "new", title: "New Releases" },
+  { id: "discover", title: "Discover" },
 ];

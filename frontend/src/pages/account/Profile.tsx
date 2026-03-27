@@ -1,7 +1,57 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const Profile = () => {
+  const { getProfile, updateProfile, loading } = useAuth();
+  const [form, setForm] = useState({
+    fullName: "",
+    phoneNumber: "",
+    email: "",
+  });
+
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await getProfile();
+
+        setForm({
+          fullName: data.fullName,
+          phoneNumber: data.phoneNumber || "",
+          email: data.email,
+        });
+      } catch (err: any) {
+        alert(err.message);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      await updateProfile({
+        fullName: form.fullName,
+        phoneNumber: form.phoneNumber,
+      });
+
+      alert("Profile updated successfully!");
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
   return (
     <div className="flex-1 overflow-y-auto bg-background-dark h-full">
       <div className="max-w-[800px] w-full mx-auto px-6 py-10 flex flex-col gap-8">
@@ -26,22 +76,19 @@ const Profile = () => {
               src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=176&q=80"
               alt=""
             />
-            <button className="absolute bottom-1 right-1 bg-primary text-white p-2 rounded-full shadow-lg hover:scale-105 transition-transform flex items-center justify-center cursor-pointer">
-              <span className="material-symbols-outlined text-sm">edit</span>
-            </button>
           </div>
           <div>
             <h1 className="text-slate-900 dark:text-white text-3xl font-bold leading-tight tracking-tight font-display">
               Profile Settings
             </h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Update your photo and personal details.
-            </p>
           </div>
         </section>
 
         {/* Form Section */}
-        <div className="bg-sidebar-dark/40 rounded-xl p-8 border border-white/5 flex flex-col gap-6 shadow-xl">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-sidebar-dark/40 rounded-xl p-8 border border-white/5 flex flex-col gap-6 shadow-xl"
+        >
           {/* Full Name */}
           <div className="flex flex-col gap-2">
             <label className="flex flex-col w-full">
@@ -49,10 +96,12 @@ const Profile = () => {
                 Full Name
               </p>
               <input
+                name="fullName"
+                value={form.fullName}
+                onChange={handleChange}
                 className="w-full bg-[#1b2227] border border-white/10 rounded-lg h-14 px-4 text-base text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 placeholder="John Doe"
                 type="text"
-                defaultValue="Alex Peterson"
               />
             </label>
           </div>
@@ -64,10 +113,12 @@ const Profile = () => {
                 Phone Number
               </p>
               <input
+                name="phoneNumber"
+                value={form.phoneNumber}
+                onChange={handleChange}
                 className="w-full bg-[#1b2227] border border-white/10 rounded-lg h-14 px-4 text-base text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                placeholder="+1 (555) 000-0000"
+                placeholder="0123456789"
                 type="tel"
-                defaultValue="+1 234 567 890"
               />
             </label>
           </div>
@@ -79,21 +130,32 @@ const Profile = () => {
                 Email Address (Locked)
               </p>
               <input
-                className="w-full bg-[#1b2227]/50 border border-white/10 rounded-lg h-14 px-4 text-base text-slate-500 cursor-not-allowed"
+                className="w-full bg-[#1b2227]/10 border border-white/10 rounded-lg h-14 px-4 text-base text-slate-500 cursor-not-allowed"
                 disabled
                 type="email"
-                defaultValue="alex.peterson@example.com"
+                value={form.email}
               />
             </label>
           </div>
 
           {/* Save Button */}
           <div className="flex justify-center mt-4">
-            <button className="w-full sm:w-auto min-w-[160px] bg-primary hover:bg-[#3996e0] text-white font-bold py-3 px-10 rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center cursor-pointer active:scale-95">
-              Save Changes
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full sm:w-auto min-w-40 bg-primary hover:bg-[#3996e0] text-white font-bold py-3 px-10 rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-70"
+            >
+              {loading ? (
+                <>
+                  <span>Saving...</span>
+                  <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                </>
+              ) : (
+                "Save Changes"
+              )}
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

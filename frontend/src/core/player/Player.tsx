@@ -6,7 +6,6 @@ import { NormalPlaybackStrategy } from "./strategies/NormalPlaybackStrategy";
 import { ShufflePlaybackStrategy } from "./strategies/ShufflePlaybackStrategy";
 import { RepeatOneStrategy } from "./strategies/RepeatOneStrategy";
 
-
 class Player {
   private currentSong: Song | null = null;
   private state: PlayerState = "stopped";
@@ -15,8 +14,7 @@ class Player {
   private playlist: Song[] = [];
 
   private currentIndex: number = -1;
-  private playbackStrategy: PlaybackStrategy =
-  new NormalPlaybackStrategy();
+  private playbackStrategy: PlaybackStrategy = new NormalPlaybackStrategy();
   private observers: Set<PlayerObserver> = new Set();
   private timer: number | null = null;
   private volume = 0.7;
@@ -29,13 +27,12 @@ class Player {
     observer.onStateChange(this.state);
     observer.onTimeChange(this.currentTime, this.duration);
     observer.onVolumeChange?.(this.volume);
-
   }
 
   unsubscribe(observer: PlayerObserver) {
     this.observers.delete(observer);
   }
-  
+
   private notifySongChange() {
     this.observers.forEach((o) => o.onSongChange(this.currentSong));
   }
@@ -46,18 +43,16 @@ class Player {
 
   private notifyTimeChange() {
     this.observers.forEach((o) =>
-      o.onTimeChange(this.currentTime, this.duration)
+      o.onTimeChange(this.currentTime, this.duration),
     );
   }
   private notifyVolumeChange() {
-  this.observers.forEach((o) =>
-    o.onVolumeChange?.(this.volume)
-  );
-}
+    this.observers.forEach((o) => o.onVolumeChange?.(this.volume));
+  }
 
   setStrategy(strategy: PlaybackStrategy) {
-  this.playbackStrategy = strategy;
-}
+    this.playbackStrategy = strategy;
+  }
   getState() {
     return this.state;
   }
@@ -66,63 +61,59 @@ class Player {
     this.currentIndex = playlist.length > 0 ? 0 : -1;
   }
   toggleShuffle() {
-  if (this.mode === "shuffle") {
-    this.mode = "normal";
-    this.playbackStrategy = new NormalPlaybackStrategy();
-  } else {
-    this.mode = "shuffle";
-    this.playbackStrategy = new ShufflePlaybackStrategy();
+    if (this.mode === "shuffle") {
+      this.mode = "normal";
+      this.playbackStrategy = new NormalPlaybackStrategy();
+    } else {
+      this.mode = "shuffle";
+      this.playbackStrategy = new ShufflePlaybackStrategy();
+    }
   }
-}
 
-toggleRepeatOne() {
-  if (this.mode === "repeat") {
-    this.mode = "normal";
-    this.playbackStrategy = new NormalPlaybackStrategy();
-  } else {
-    this.mode = "repeat";
-    this.playbackStrategy = new RepeatOneStrategy();
+  toggleRepeatOne() {
+    if (this.mode === "repeat") {
+      this.mode = "normal";
+      this.playbackStrategy = new NormalPlaybackStrategy();
+    } else {
+      this.mode = "repeat";
+      this.playbackStrategy = new RepeatOneStrategy();
+    }
   }
-}
 
   play(song?: Song) {
+    if (song) {
+      this.currentIndex = this.playlist.findIndex((s) => s.id === song.id);
 
-  if (song) {
-    this.currentIndex = this.playlist.findIndex(
-      s => s.id === song.id
-    );
+      this.currentSong = song;
+      this.currentTime = 0;
+      this.duration = 225;
+      this.notifySongChange();
+    }
 
-    this.currentSong = song;
-    this.currentTime = 0;
-    this.duration = 225;
-    this.notifySongChange();
+    if (!this.currentSong && this.playlist.length > 0) {
+      this.currentIndex = 0;
+      this.currentSong = this.playlist[0];
+      this.currentTime = 0;
+      this.duration = 255;
+      this.notifySongChange();
+    }
+
+    if (!this.currentSong) return;
+
+    if (this.state === "playing") return;
+
+    this.state = "playing";
+    this.notifyStateChange();
+    this.startTimer();
+    // console.log("STATE:", this.state);
   }
-
-  if(!this.currentSong && this.playlist.length > 0){
-    this.currentIndex = 0;
-    this.currentSong = this.playlist[0];
-    this.currentTime= 0;
-    this.duration = 255;
-    this.notifySongChange();
-  }
-
-  if (!this.currentSong) return;
-
-  if (this.state === "playing") return;
-
-  this.state = "playing";
-  this.notifyStateChange();
-  this.startTimer();
-  console.log("STATE:", this.state);
-}
-
 
   pause() {
     if (this.state !== "playing") return;
     this.state = "paused";
     this.notifyStateChange();
     this.stopTimer();
-    console.log("STATE:", this.state);
+    // console.log("STATE:", this.state);
   }
 
   stop() {
@@ -132,11 +123,11 @@ toggleRepeatOne() {
     this.currentTime = 0;
 
     this.currentSong = null;
-    this.notifySongChange(); 
+    this.notifySongChange();
     this.notifyStateChange();
     this.notifyTimeChange();
     this.stopTimer();
-    console.log("STATE:", this.state);
+    // console.log("STATE:", this.state);
   }
 
   seek(time: number) {
@@ -152,36 +143,34 @@ toggleRepeatOne() {
   }
 
   previous() {
-  if (this.playlist.length === 0) return;
-  if (this.currentIndex < 0) return;
+    if (this.playlist.length === 0) return;
+    if (this.currentIndex < 0) return;
 
-  const prevIndex =
-    this.playbackStrategy.getPreviousIndex(
+    const prevIndex = this.playbackStrategy.getPreviousIndex(
       this.currentIndex,
-      this.playlist
+      this.playlist,
     );
 
-  if (prevIndex < 0) return;
+    if (prevIndex < 0) return;
 
-  this.currentIndex = prevIndex;
-  this.play(this.playlist[this.currentIndex]);
-}
+    this.currentIndex = prevIndex;
+    this.play(this.playlist[this.currentIndex]);
+  }
 
   next() {
-  if (this.playlist.length === 0) return;
-  if (this.currentIndex < 0) return;
+    if (this.playlist.length === 0) return;
+    if (this.currentIndex < 0) return;
 
-  const nextIndex =
-    this.playbackStrategy.getNextIndex(
+    const nextIndex = this.playbackStrategy.getNextIndex(
       this.currentIndex,
-      this.playlist
+      this.playlist,
     );
 
-  if (nextIndex < 0) return;
+    if (nextIndex < 0) return;
 
-  this.currentIndex = nextIndex;
-  this.play(this.playlist[this.currentIndex]);
-}
+    this.currentIndex = nextIndex;
+    this.play(this.playlist[this.currentIndex]);
+  }
 
   private startTimer() {
     this.stopTimer();
@@ -205,6 +194,5 @@ toggleRepeatOne() {
     }
   }
 }
-
 
 export const player = new Player();
