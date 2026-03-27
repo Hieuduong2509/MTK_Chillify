@@ -91,7 +91,8 @@ public class PlaylistService : IPlaylistService
             PlaylistName = p.PlaylistName, 
             Description = p.Description, 
             PlaylistType = p.PlaylistType.ToString(),
-            CreatedAt = p.CreatedAt
+            CreatedAt = p.CreatedAt,
+            SongCount = p.PlaylistSongs?.Count ?? 0
         });
     }
 

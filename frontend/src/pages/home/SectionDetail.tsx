@@ -1,7 +1,7 @@
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import SongCard from "../../components/song/SongCard";
 import { useSong } from "../../context/SongContext";
-import { useEffect } from "react";
 import { player } from "../../core/player/Player";
 
 const SectionDetail = () => {
@@ -68,13 +68,6 @@ const SectionDetail = () => {
           {songs.map((song) => (
             <SongCard key={song.id} song={song} />
           ))}
-        </div>
-
-        {/* Load more results */}
-        <div className="flex justify-center mt-12 mb-20">
-          <button className="px-8 py-3 bg-slate-200 dark:bg-surface-dark text-slate-900 dark:text-white font-bold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-800 transition-colors cursor-pointer">
-            Load More Results
-          </button>
         </div>
       </div>
     </div>

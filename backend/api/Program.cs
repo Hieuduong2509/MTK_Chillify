@@ -1,4 +1,3 @@
-
 using application.interfaces.Repositories;
 using application.interfaces.Services;
 using application.patterns.factory;
@@ -12,7 +11,6 @@ using Chillify.Application.Interfaces.Repositories;
 using Chillify.Application.Interfaces.Services;
 using Chillify.Application.Patterns.Observer;
 
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -24,65 +22,47 @@ using Chillify.Application.Models;
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
+// ======================
+// 1. Dependency Injection (Đã dọn dẹp các dòng trùng lặp)
+// ======================
 
-// Application services
-builder.Services.AddScoped<ISongService, SongService>();
-
-// Infrastructure services
+// Repositories
 builder.Services.AddScoped<ISongRepository, SongRepository>();
+builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPlayHistoryRepository, PlayHistoryRepository>();
+
+// Services
+builder.Services.AddScoped<ISongService, SongService>();
+builder.Services.AddScoped<IPlaylistService, PlaylistService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddHttpClient<IJamendoService, JamendoService>();
 
+// Patterns (Strategy & Observer)
 builder.Services.AddScoped<ISongStrategy, TrendingStrategy>();
 builder.Services.AddScoped<ISongStrategy, NewStrategy>();
 builder.Services.AddScoped<ISongStrategy, DiscoverStrategy>();
-
 builder.Services.AddScoped<SongStrategyFactory>();
+builder.Services.AddScoped<IPlayerObserver, AnalyticsObserver>();
 
-builder.Services.AddScoped<IPlaylistService, PlaylistService>();
-builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
-builder.Services.AddScoped<ISongRepository, SongRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
-builder.Services.AddScoped<IPlaylistService, PlaylistService>();
-// ======================
-
-// 1. Controllers
-// ======================
-
+// Controllers
 builder.Services.AddControllers();
+
 // ======================
 // 2. DbContext (PostgreSQL + snake_case)
 // ======================
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-options.UseNpgsql(connectionString)
-    .UseSnakeCaseNamingConvention()
+    options.UseNpgsql(connectionString)
+           .UseSnakeCaseNamingConvention()
 );
 
-// Repositories
-builder.Services.AddScoped<ISongRepository, SongRepository>();
-builder.Services.AddScoped<IPlayHistoryRepository, PlayHistoryRepository>();
-
-// Services
-builder.Services.AddScoped<ISongService, SongService>();
-builder.Services.AddScoped<IPlayerService, PlayerService>();
-
-// Observer
-builder.Services.AddScoped<IPlayerObserver, AnalyticsObserver>();
-
-    
 // ======================
-// 3. Dependency Injection
+// 3. Swagger
 // ======================
-
-// ======================
-// 4. Swagger
-// ======================
-
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -95,10 +75,6 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT"
     };
-
-// ======================
-// 5. CORS
-// ======================
 
     c.AddSecurityDefinition("Bearer", securityScheme);
 
@@ -118,8 +94,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-//  4. CORS 
-
+// ======================
+// 4. CORS 
+// ======================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -128,13 +105,9 @@ builder.Services.AddCors(options =>
     });
 });
 
-
-
 // ======================
-// 6. Health Check (FIX)
+// 5. JWT Authentication (Đã gộp và sửa lỗi Token hết hạn)
 // ======================
-
-// 5. JWT 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -153,22 +126,24 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
         ),
-        NameClaimType = JwtRegisteredClaimNames.Sub
+        NameClaimType = JwtRegisteredClaimNames.Sub,
+        
+        // FIX LỖI: Bắt buộc Token chết đúng thời gian, không nhây thêm 5 phút
+        ClockSkew = TimeSpan.Zero 
     };
 });
 
-//  6. Health Check 
+// ======================
+// 6. Health Check
+// ======================
 builder.Services.AddHealthChecks()
     .AddNpgSql(connectionString!);
 
 var app = builder.Build();
 
-
-
 // ======================
-// Middleware pipeline
+// 7. Middleware pipeline
 // ======================
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -177,8 +152,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 app.MapHealthChecks("/health");
 

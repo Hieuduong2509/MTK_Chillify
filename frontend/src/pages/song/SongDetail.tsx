@@ -58,14 +58,12 @@ const SongDetail = () => {
   return (
     <>
       <div className="px-8 pt-10 pb-32 text-white bg-linear-to-b from-primary/5 to-transparent">
-        {/* HERO SECTION */}
         <div className="flex flex-col md:flex-row md:items-end gap-10">
-          {/* COVER */}
           <div className="relative group">
             <img
-              className="w-48 h-48 md:w-64 md:h-64 rounded-xl bg-cover bg-center shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]"
+              className="w-48 h-48 md:w-64 md:h-64 rounded-xl bg-cover bg-center shadow-2xl transition-transform duration-300 group-hover:scale-[1.02] bg-gray-800"
               src={song.image}
-              alt=""
+              alt={song.title}
             />
 
             <div
@@ -78,7 +76,6 @@ const SongDetail = () => {
             </div>
           </div>
 
-          {/* INFO */}
           <div className="flex flex-1 flex-col justify-end gap-6 pb-2">
             <div className="flex flex-col gap-2">
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
@@ -98,7 +95,6 @@ const SongDetail = () => {
               </div>
             </div>
 
-            {/* ACTION BUTTONS */}
             <div className="flex flex-wrap items-center gap-4">
               <button
                 title="Play song"
@@ -111,7 +107,6 @@ const SongDetail = () => {
                 Play
               </button>
 
-              {/* Add */}
               <button
                 onClick={() => {
                   setSelectedSong(song);
@@ -123,7 +118,6 @@ const SongDetail = () => {
                 <span className="material-symbols-outlined text-2xl">add</span>
               </button>
 
-              {/* Like */}
               <button
                 title={isMainSongLiked ? "Unlike this song" : "Like this song"}
                 onClick={() => toggleLike(song.id)}
@@ -138,7 +132,6 @@ const SongDetail = () => {
           </div>
         </div>
 
-        {/* UP NEXT */}
         <div className="mt-16">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -161,22 +154,77 @@ const SongDetail = () => {
                 const isNextSongLiked = likedSongs[nextSong.id];
 
                 return (
-                  <div
-                    key={nextSong.id}
-                    className="group flex items-center gap-4 rounded-xl p-3 hover:bg-[#19282E]/50 transition-colors cursor-pointer"
-                  >
-                    {/* Index */}
-                    <div className="hidden lg:flex w-8 justify-center text-gray-400 group-hover:text-white">
-                      {index + 1}
+                  <>
+                    <div
+                      key={nextSong.id}
+                      className="group flex items-center gap-4 rounded-xl p-3 hover:bg-[#19282E]/50 transition-colors cursor-pointer"
+                    >
+                      {/* Index */}
+                      <div className="hidden lg:flex w-8 justify-center text-gray-400 group-hover:text-white">
+                        {index + 1}
+                      </div>
+
+                      {/* Image */}
+                      <img
+                        className="h-12 w-12 rounded bg-cover bg-center"
+                        src={nextSong.image}
+                      />
+
+                      {/* Info */}
+                      <div
+                        onClick={() => {
+                          player.loadPlaylist(trendingSongs);
+                          player.play(nextSong);
+                        }}
+                        className="flex flex-1 flex-col"
+                      >
+                        <p className="text-sm font-bold text-white hover:text-primary transition-all duration-300">
+                          {nextSong.title}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          {nextSong.artist}
+                        </p>
+                      </div>
+
+                      {/* Add */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedSong(nextSong);
+                          setIsOpenAddModal(true);
+                        }}
+                        className="flex h-12 w-12 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-2xl">
+                          add
+                        </span>
+                      </button>
+
+                      {/* Like */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleLike(nextSong.id);
+                        }}
+                        className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
+                        ${
+                          isNextSongLiked
+                            ? "text-primary scale-110"
+                            : "text-gray-400 hover:text-primary"
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-2xl">
+                          favorite
+                        </span>
+                      </button>
                     </div>
 
-                    {/* Image */}
                     <img
-                      className="h-12 w-12 rounded bg-cover bg-center"
+                      className="h-12 w-12 rounded bg-cover bg-center bg-gray-800"
                       src={nextSong.image}
+                      alt={nextSong.title}
                     />
 
-                    {/* Info */}
                     <div
                       onClick={() => {
                         player.loadPlaylist(trendingSongs);
@@ -190,38 +238,32 @@ const SongDetail = () => {
                       <p className="text-xs text-gray-400">{nextSong.artist}</p>
                     </div>
 
-                    {/* Add */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedSong(nextSong);
                         setIsOpenAddModal(true);
                       }}
-                      className="flex h-12 w-12 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 cursor-pointer"
+                      className="flex h-12 w-12 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 cursor-pointer opacity-0 group-hover:opacity-100"
                     >
                       <span className="material-symbols-outlined text-2xl">
                         add
                       </span>
                     </button>
 
-                    {/* Like */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleLike(nextSong.id);
                       }}
                       className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
-                        ${
-                          isNextSongLiked
-                            ? "text-primary scale-110"
-                            : "text-gray-400 hover:text-primary"
-                        }`}
+                      ${isNextSongLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
                     >
                       <span className="material-symbols-outlined text-2xl">
                         favorite
                       </span>
                     </button>
-                  </div>
+                  </>
                 );
               })}
           </div>

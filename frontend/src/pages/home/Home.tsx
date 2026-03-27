@@ -1,9 +1,12 @@
 import { useMediaQuery } from "react-responsive";
+
 import { sections } from "../../assets/assets";
 import SongCard from "../../components/song/SongCard";
 import { useNavigate } from "react-router-dom";
 import { useSong } from "../../context/SongContext";
 import { useEffect } from "react";
+
+import { homeSections } from "../../assets/assets";
 
 const Home = () => {
   const {
