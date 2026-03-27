@@ -33,7 +33,7 @@ const MyPlaylist = () => {
   return (
     <>
       <div className="px-8 py-8 space-y-8">
-        {}
+        {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-1.5">
           <h1 className="text-3xl font-bold text-white">My Playlist</h1>
 
@@ -50,20 +50,18 @@ const MyPlaylist = () => {
           </button>
         </div>
 
-        {}
+        {/* Playlist List */}
         <div className="divide-y divide-white/5">
           {playlists.map((playlist) => (
             <div
               key={playlist.id}
               className="relative flex items-center justify-between py-4 hover:bg-white/5 px-2 rounded-lg transition-all duration-300"
             >
-              {}
               <Link
                 to={`/playlists/${playlist.id}`}
                 className="flex items-center gap-4"
               >
                 <div className="w-14 h-14 rounded-lg overflow-hidden bg-neutral-800 flex items-center justify-center">
-                  {}
                   <span className="material-symbols-outlined text-gray-500">music_note</span>
                 </div>
 
@@ -71,13 +69,16 @@ const MyPlaylist = () => {
                   <h3 className="font-semibold text-white hover:text-primary transition-all duration-300">
                     {playlist.playlistName}
                   </h3>
+                  
+                  {/* SỬA ĐÚNG DÒNG NÀY: Dùng playlist.songCount thay vì playlist.songs?.length */}
                   <p className="text-sm text-gray-400">
-                    {playlist.songs?.length || 0} songs
+                    {playlist.songCount || 0} songs
                   </p>
+                  
                 </div>
               </Link>
 
-              {}
+              {/* Menu Actions */}
               <div className="relative">
                 <span
                   onClick={() =>
@@ -125,23 +126,23 @@ const MyPlaylist = () => {
       </div>
 
       <PlaylistModal
-  isOpen={isOpenModal}
-  mode={mode}
-  initialData={selectedPlaylist ? {
-    id: selectedPlaylist.id,
-    name: selectedPlaylist.playlistName,
-    description: selectedPlaylist.description || ""
-  } : { name: "", description: "" }} 
-  onClose={() => setIsOpenModal(false)}
-  onSubmit={async (data) => {
-    if (mode === "create") {
-      await createPlaylist(data.name, data.description);
-    } else {
-      await updatePlaylist(selectedPlaylist.id, data.name, data.description);
-    }
-    setIsOpenModal(false);
-  }}
-/>
+        isOpen={isOpenModal}
+        mode={mode}
+        initialData={selectedPlaylist ? {
+          id: selectedPlaylist.id,
+          name: selectedPlaylist.playlistName,
+          description: selectedPlaylist.description || ""
+        } : { name: "", description: "" }} 
+        onClose={() => setIsOpenModal(false)}
+        onSubmit={async (data) => {
+          if (mode === "create") {
+            await createPlaylist(data.name, data.description);
+          } else {
+            await updatePlaylist(selectedPlaylist.id, data.name, data.description);
+          }
+          setIsOpenModal(false);
+        }}
+      />
 
       <ConfirmDeleteModal
         isOpen={confirmState.isOpen}
