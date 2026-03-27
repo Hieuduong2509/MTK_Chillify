@@ -13,6 +13,7 @@ import SongDetail from "./pages/song/SongDetail";
 import NotFound from "./pages/404/NotFound";
 import Account from "./pages/account/Account";
 import LikedSongs from "./pages/like-songs/LikedSongs";
+import PrivateRoute from "./routes/PrivateRoute";
 
 // IMPORT CÁC PROVIDER
 import { PlaylistProvider } from "./context/PlaylistContext";
@@ -32,24 +33,28 @@ function App() {
           </Route>
 
           {/* Main routes */}
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/section/:sectionId" element={<SectionDetail />} />
+          <Route element={<PrivateRoute />}>
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />}></Route>
+              <Route
+                path="/section/:sectionId"
+                element={<SectionDetail />}
+              ></Route>
 
-            <Route path="/account" element={<Account />} />
-            <Route path="/account/profile" element={<Profile />} />
-            <Route
-              path="/account/change-password"
-              element={<ChangePassword />}
-            />
+              <Route path="/account" element={<Account />}></Route>
+              <Route path="/account/profile" element={<Profile />}></Route>
+              <Route
+                path="/account/change-password"
+                element={<ChangePassword />}
+              ></Route>
 
-            {/* Các trang sử dụng usePlaylist() bắt buộc phải nằm trong PlaylistProvider */}
-            <Route path="/playlists" element={<MyPlaylist />} />
-            <Route path="/playlists/:id" element={<PlaylistDetail />} />
+              <Route path="/playlists" element={<MyPlaylist />}></Route>
+              <Route path="/playlists/:id" element={<PlaylistDetail />}></Route>
 
-            <Route path="/liked-songs" element={<LikedSongs />} />
+              <Route path="/liked-songs" element={<LikedSongs />} />
 
-            <Route path="/song/:id" element={<SongDetail />} />
+              <Route path="/song/:id" element={<SongDetail />}></Route>
+            </Route>
           </Route>
 
           {/* 404 */}

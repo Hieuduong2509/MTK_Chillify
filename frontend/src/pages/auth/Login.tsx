@@ -1,48 +1,46 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { assets } from "../../assets/assets";
-import { apiRequest } from "../../api/api"; 
+
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  
+  const { login, loading } = useAuth();
   const navigate = useNavigate();
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
 
     try {
-
-      const response = await apiRequest("auth", "/login", {
-        method: "POST",
-        body: { email, password },
+      await login({
+        email: form.email,
+        password: form.password,
       });
 
-
-      if (response && response.token) {
-        localStorage.setItem("token", response.token);
-        
-
-        navigate("/", { replace: true });
-      } else {
-        setError("Invalid email or password");
-      }
+      alert("Login successful!");
+      navigate("/");
     } catch (err: any) {
-
-      setError(err.message || "An error occurred during login");
-    } finally {
-      setLoading(false);
+      alert(err.message);
     }
   };
 
   return (
     <div className="bg-background-dark min-h-screen flex items-center justify-center font-display antialiased p-4">
-      <div className="w-full max-w-[440px] flex flex-col items-center">
+      <div className="w-full max-w-110 flex flex-col items-center">
+        {/* Card Container */}
         <div className="w-full bg-[#1C3340] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-white/5 p-7">
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center justify-center w-44 h-44 object-contain">
@@ -50,16 +48,9 @@ const Login = () => {
             </div>
           </div>
 
-          <h2 className="text-white text-2xl font-bold text-center mb-6">Welcome Back</h2>
-
-          {}
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-sm p-3 rounded-lg mb-5 text-center">
-              {error}
-            </div>
-          )}
-
-          <form className="space-y-5" onSubmit={handleLogin}>
+          {/* Form */}
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {/* Email Input */}
             <div className="flex flex-col gap-2">
               <label className="text-slate-200 text-sm font-semibold leading-normal">
                 Email
@@ -69,12 +60,12 @@ const Login = () => {
                   mail
                 </span>
                 <input
+                  name="email"
+                  type="email"
                   className="flex w-full rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/20 border border-slate-700 bg-slate-800/50 focus:border-primary h-12 pl-12 pr-4 placeholder:text-slate-500 text-base font-normal transition-all"
                   placeholder="Enter your email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={form.email}
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -88,23 +79,26 @@ const Login = () => {
                   lock
                 </span>
                 <input
+                  name="password"
+                  type="password"
                   className="flex w-full rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary/20 border border-slate-700 bg-slate-800/50 focus:border-primary h-12 pl-12 pr-4 placeholder:text-slate-500 text-base font-normal transition-all"
                   placeholder="Enter your password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={form.password}
+                  onChange={handleChange}
                 />
               </div>
             </div>
 
             <div className="pt-3 space-y-5">
-              <button 
-                type="submit"
-                disabled={loading}
-                className={`flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-hover text-white text-base font-bold transition-colors shadow-md shadow-primary/10 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
-              >
-                <span className="truncate">{loading ? "Logging in..." : "Login"}</span>
+              <button className="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-hover text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors shadow-md shadow-primary/10">
+                {loading ? (
+                  <>
+                    <span>Logging in...</span>
+                    <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                  </>
+                ) : (
+                  "Login"
+                )}
               </button>
 
               <div className="text-center">
