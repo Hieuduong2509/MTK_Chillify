@@ -25,6 +25,7 @@ interface PlaylistContextType {
   loading: boolean;
   
   likedSongIds: string[]; 
+  likedSongsData: any[]; // 1. ĐÃ FIX: Khai báo thêm dữ liệu này để TS không báo lỗi
   toggleLikeSong: (songId: string) => Promise<void>; 
 
   fetchPlaylists: () => Promise<void>;
@@ -44,6 +45,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [loading, setLoading] = useState(false);
 
   const [likedSongIds, setLikedSongIds] = useState<string[]>([]);
+  const [likedSongsData, setLikedSongsData] = useState<any[]>([]);
 
   const fetchPlaylists = useCallback(async () => {
     setLoading(true);
@@ -66,15 +68,33 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const fetchLikedSongs = async () => {
       if (likedPlaylist && localStorage.getItem("token")) {
         try {
-          const songs = await apiRequest<Song[]>('playlist', `/${likedPlaylist.id}/liked-songs`);
-          setLikedSongIds(songs.map(s => s.songId));
+          const songs = await apiRequest<any[]>('playlist', `/${likedPlaylist.id}/liked-songs`);
+          setLikedSongIds(songs.map((s: any) => s.songId));
+          setLikedSongsData(songs); 
         } catch (error) { 
           console.error("Lỗi lấy danh sách bài hát yêu thích:", error); 
         }
       }
     };
     fetchLikedSongs();
-  }, [likedPlaylist]);
+  }, [likedPlaylist]); 
+
+  // 2. ĐÃ FIX: Dời hàm removeSongFromPlaylist lên trên này để toggleLikeSong gọi được
+  const removeSongFromPlaylist = async (playlistId: string, songId: string) => {
+    try {
+      await apiRequest('playlist', `/${playlistId}/songs/${songId}`, { method: 'DELETE' });
+      
+      await fetchPlaylists(); 
+      if (currentPlaylist?.id === playlistId) {
+        setCurrentPlaylist({
+          ...currentPlaylist,
+          songs: currentPlaylist.songs?.filter(s => s.songId !== songId)
+        });
+      }
+    } catch (error) { 
+      console.error(error); 
+    }
+  };
 
   const toggleLikeSong = async (songId: string) => {
     if (!likedPlaylist) {
@@ -86,7 +106,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     try {
       if (isLiked) {
-        await removeSongFromPlaylist(likedPlaylist.id, songId);
+        await removeSongFromPlaylist(likedPlaylist.id, songId); // Giờ gọi vô tư không bị sập nữa
         setLikedSongIds(prev => prev.filter(id => id !== songId));
       } else {
         await apiRequest('playlist', `/${likedPlaylist.id}/songs/${songId}`, { method: 'POST' });
@@ -98,14 +118,15 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const fetchPlaylistDetail = async (id: string) => {
+  // 3. ĐÃ FIX: Bọc useCallback để chống lỗi render vô hạn ở PlaylistDetail
+  const fetchPlaylistDetail = useCallback(async (id: string) => {
     setLoading(true);
     try {
       const data = await apiRequest<Playlist>('playlist', `/${id}`);
       setCurrentPlaylist(data);
     } catch (error) { console.error(error); }
     finally { setLoading(false); }
-  };
+  }, []);
 
   const addSongToPlaylist = async (playlistId: string, songId: string) => {
     try {
@@ -143,23 +164,11 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     } catch (error) { console.error(error); }
   };
 
-  const removeSongFromPlaylist = async (playlistId: string, songId: string) => {
-    try {
-      await apiRequest('playlist', `/${playlistId}/songs/${songId}`, { method: 'DELETE' });
-      if (currentPlaylist?.id === playlistId) {
-        setCurrentPlaylist({
-          ...currentPlaylist,
-          songs: currentPlaylist.songs?.filter(s => s.songId !== songId)
-        });
-      }
-    } catch (error) { console.error(error); }
-  };
-
   return (
     <PlaylistContext.Provider value={{ 
       playlists, currentPlaylist, loading, 
       
-      likedSongIds, toggleLikeSong, 
+      likedSongIds, likedSongsData, toggleLikeSong, 
       
       fetchPlaylists, fetchPlaylistDetail, createPlaylist, 
       updatePlaylist, deletePlaylist, removeSongFromPlaylist,

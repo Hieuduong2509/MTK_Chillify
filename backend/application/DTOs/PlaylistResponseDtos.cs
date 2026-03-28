@@ -6,6 +6,5 @@ public class PlaylistResponseDto
     public string PlaylistType { get; set; }
     public DateTime CreatedAt { get; set; }
     
-    // THÊM DÒNG NÀY ĐỂ TRẢ VỀ SỐ LƯỢNG:
     public int SongCount { get; set; } 
 }

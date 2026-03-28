@@ -6,7 +6,15 @@ const AddSongToPlaylistModal = ({ isOpen, song, onClose }: any) => {
   if (!isOpen || !song) return null;
 
   const handleSelect = async (playlistId: string) => {
-    await addSongToPlaylist(playlistId, song.songId);
+    // FIX LỖI Ở ĐÂY: Lấy song.id (từ SongContext) hoặc song.songId (từ data gốc)
+    const targetSongId = song.id || song.songId; 
+    
+    if (!targetSongId) {
+        alert("Lỗi: Không tìm thấy ID bài hát!");
+        return;
+    }
+
+    await addSongToPlaylist(playlistId, targetSongId);
     onClose();
   };
 
@@ -34,7 +42,6 @@ const AddSongToPlaylistModal = ({ isOpen, song, onClose }: any) => {
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-medium truncate">{p.playlistName}</p>
                   
-                  {}
                   <p className="text-xs text-gray-500">{p.songCount || 0} songs</p>
                   
                 </div>

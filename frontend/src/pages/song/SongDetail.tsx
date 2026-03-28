@@ -218,6 +218,51 @@ const SongDetail = () => {
                         </span>
                       </button>
                     </div>
+
+                    <img
+                      className="h-12 w-12 rounded bg-cover bg-center bg-gray-800"
+                      src={nextSong.image}
+                      alt={nextSong.title}
+                    />
+
+                    <div
+                      onClick={() => {
+                        player.loadPlaylist(trendingSongs);
+                        player.play(nextSong);
+                      }}
+                      className="flex flex-1 flex-col"
+                    >
+                      <p className="text-sm font-bold text-white hover:text-primary transition-all duration-300">
+                        {nextSong.title}
+                      </p>
+                      <p className="text-xs text-gray-400">{nextSong.artist}</p>
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSong(nextSong);
+                        setIsOpenAddModal(true);
+                      }}
+                      className="flex h-12 w-12 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 cursor-pointer opacity-0 group-hover:opacity-100"
+                    >
+                      <span className="material-symbols-outlined text-2xl">
+                        add
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleLike(nextSong.id);
+                      }}
+                      className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
+                      ${isNextSongLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
+                    >
+                      <span className="material-symbols-outlined text-2xl">
+                        favorite
+                      </span>
+                    </button>
                   </>
                 );
               })}
