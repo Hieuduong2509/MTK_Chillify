@@ -25,7 +25,7 @@ interface PlaylistContextType {
   loading: boolean;
   
   likedSongIds: string[]; 
-  likedSongsData: any[]; // 1. ĐÃ FIX: Khai báo thêm dữ liệu này để TS không báo lỗi
+  likedSongsData: any[]; 
   toggleLikeSong: (songId: string) => Promise<void>; 
 
   fetchPlaylists: () => Promise<void>;
@@ -72,14 +72,13 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           setLikedSongIds(songs.map((s: any) => s.songId));
           setLikedSongsData(songs); 
         } catch (error) { 
-          console.error("Lỗi lấy danh sách bài hát yêu thích:", error); 
+          console.error("Error! Can't fetch liked songs:", error); 
         }
       }
     };
     fetchLikedSongs();
   }, [likedPlaylist]); 
 
-  // 2. ĐÃ FIX: Dời hàm removeSongFromPlaylist lên trên này để toggleLikeSong gọi được
   const removeSongFromPlaylist = async (playlistId: string, songId: string) => {
     try {
       await apiRequest('playlist', `/${playlistId}/songs/${songId}`, { method: 'DELETE' });
@@ -98,7 +97,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const toggleLikeSong = async (songId: string) => {
     if (!likedPlaylist) {
-      alert("Hệ thống chưa tạo Playlist 'Liked Songs' cho tài khoản của bạn!");
+      alert("System hasn't created 'Liked Songs' playlist for your account!");
       return;
     }
 
@@ -106,7 +105,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     try {
       if (isLiked) {
-        await removeSongFromPlaylist(likedPlaylist.id, songId); // Giờ gọi vô tư không bị sập nữa
+        await removeSongFromPlaylist(likedPlaylist.id, songId); 
         setLikedSongIds(prev => prev.filter(id => id !== songId));
       } else {
         await apiRequest('playlist', `/${likedPlaylist.id}/songs/${songId}`, { method: 'POST' });
@@ -114,11 +113,10 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setLikedSongIds(prev => [...prev, songId]);
       }
     } catch (error) {
-      console.error("Lỗi khi thay đổi trạng thái yêu thích:", error);
+      console.error("Error when toggling like status:", error);
     }
   };
 
-  // 3. ĐÃ FIX: Bọc useCallback để chống lỗi render vô hạn ở PlaylistDetail
   const fetchPlaylistDetail = useCallback(async (id: string) => {
     setLoading(true);
     try {
@@ -138,8 +136,8 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         await fetchPlaylistDetail(playlistId);
       }
     } catch (error) {
-      console.error("Lỗi thêm bài hát:", error);
-      alert("Bài hát đã có trong playlist!");
+      console.error("Error adding song to playlist:", error);
+      alert("Song already exists in the playlist!");
     }
   };
 

@@ -1,14 +1,18 @@
 using System;
+using Chillify.Application.Models; 
+using application.models;
 
-namespace application.models;
-
-public class PlaylistSong
+namespace application.models 
 {
-    public Guid Id { get; set; } 
-    public Guid PlaylistId { get; set; }
-    public Guid SongId { get; set; }
-    public int Position { get; set; }
-    public DateTime AddedAt { get; set; }
+    public class PlaylistSong
+    {
+        public Guid PlaylistId { get; set; }
+        public Guid SongId { get; set; }
+        public int Position { get; set; }
+        public DateTime AddedAt { get; set; }
 
-    public virtual Song Song { get; set; } = null!;
+        // Các Navigation properties
+        public Playlist Playlist { get; set; } = null!;
+        public Song Song { get; set; } = null!;
+    }
 }

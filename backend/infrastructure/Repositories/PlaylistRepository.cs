@@ -34,22 +34,31 @@ public class PlaylistRepository : IPlaylistRepository
     }
 
     public async Task AddSongToPlaylistAsync(Guid playlistId, Guid songId)
+{
+    var existingSong = await _context.PlaylistSongs
+        .FirstOrDefaultAsync(ps => ps.PlaylistId == playlistId && ps.SongId == songId);
+
+    if (existingSong != null)
     {
-        var count = await _context.PlaylistSongs
-            .CountAsync(ps => ps.PlaylistId == playlistId);
-
-        var entity = new PlaylistSong
-        {
-            Id = Guid.NewGuid(),
-            PlaylistId = playlistId,
-            SongId = songId,
-            Position = count + 1,
-            AddedAt = DateTime.UtcNow
-        };
-
-        _context.PlaylistSongs.Add(entity);
-        await _context.SaveChangesAsync();
+        throw new Exception("Bài hát này đã có  sẵn trong Playlist!");
     }
+
+
+    var maxPosition = await _context.PlaylistSongs
+        .Where(ps => ps.PlaylistId == playlistId)
+        .MaxAsync(ps => (int?)ps.Position) ?? 0;
+
+    var playlistSong = new PlaylistSong
+    {
+       PlaylistId = playlistId,
+        SongId = songId,
+        AddedAt = DateTime.UtcNow,
+        Position = maxPosition + 1
+    };
+
+    _context.PlaylistSongs.Add(playlistSong);
+    await _context.SaveChangesAsync();
+}
 
     public async Task RemoveSongFromPlaylistAsync(Guid playlistId, Guid songId)
     {

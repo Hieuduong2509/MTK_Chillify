@@ -95,9 +95,8 @@ public class PlaylistController : ControllerBase
     {
         try
         {
-            // Truyền trực tiếp songId vào, bỏ cái RequestDto đi
             await _playlistService.AddSongToPlaylistAsync(CurrentUserId, playlistId, songId);
-            return NoContent(); // Thành công
+            return NoContent();
         }
         catch (UnauthorizedAccessException ex)
         {

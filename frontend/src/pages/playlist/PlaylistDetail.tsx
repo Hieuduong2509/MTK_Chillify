@@ -211,7 +211,8 @@ const PlaylistDetail = () => {
 
           {(!currentPlaylist.songs || currentPlaylist.songs.length === 0) && (
             <div className="text-center text-gray-500 py-10">
-              Không có bài hát nào trong playlist này.
+              Dont have any song yet! <br />
+              Click the "Add to other playlist" action to add songs to this playlist.
             </div>
           )}
         </div>

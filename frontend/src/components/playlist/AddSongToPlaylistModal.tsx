@@ -6,7 +6,6 @@ const AddSongToPlaylistModal = ({ isOpen, song, onClose }: any) => {
   if (!isOpen || !song) return null;
 
   const handleSelect = async (playlistId: string) => {
-    // FIX LỖI Ở ĐÂY: Lấy song.id (từ SongContext) hoặc song.songId (từ data gốc)
     const targetSongId = song.id || song.songId; 
     
     if (!targetSongId) {

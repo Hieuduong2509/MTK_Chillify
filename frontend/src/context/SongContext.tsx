@@ -44,7 +44,6 @@ export const SongProvider = ({ children }: { children: React.ReactNode }) => {
     {},
   );
 
-  // ===== GET SONG FROM API =====
   const getSongs = async () => {
     if (isInitialized) return;
 
@@ -63,7 +62,6 @@ export const SongProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ===== GET SONG DETAIL =====
   const getSongDetail = async (id: string) => {
     setLoading(true);
 
@@ -84,9 +82,7 @@ export const SongProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ===== GET SONGS BY TYPE =====
   const getSongsByType = async (type: string) => {
-    // setLoading(true);
     setLoadingByType((prev) => ({
       ...prev,
       [type]: true,
@@ -107,7 +103,6 @@ export const SongProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (err: any) {
       console.error(err);
     } finally {
-      // setLoading(false);
       setLoadingByType((prev) => ({
         ...prev,
         [type]: false,

@@ -18,15 +18,14 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        // --- Table Mappings ---
+        modelBuilder.Entity<PlaylistSong>()
+        .HasKey(ps => new { ps.PlaylistId, ps.SongId });
         modelBuilder.Entity<User>().ToTable("users");
         modelBuilder.Entity<Song>().ToTable("songs");
         modelBuilder.Entity<Playlist>().ToTable("playlists");
         modelBuilder.Entity<PlaylistSong>().ToTable("playlist_songs");
         modelBuilder.Entity<SongPlayHistory>().ToTable("song_play_history");
 
-        // --- Property Configurations ---
         modelBuilder.Entity<Playlist>(entity =>
         {
             entity.Property(p => p.PlaylistType)
@@ -39,7 +38,6 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<PlaylistSong>(entity =>
         {
-            // Ensures a song is unique within a playlist and maintains consistent ordering
             entity.HasIndex(ps => new { ps.PlaylistId, ps.SongId }).IsUnique();
             entity.HasIndex(ps => new { ps.PlaylistId, ps.Position }).IsUnique();
         });

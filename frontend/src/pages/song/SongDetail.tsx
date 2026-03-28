@@ -1,15 +1,17 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
-import { trendingSongs } from "../../assets/dummyDB";
+import { useEffect, useState } from "react";
 import { player } from "../../core/player/Player";
 import AddSongToPlaylistModal from "../../components/playlist/AddSongToPlaylistModal";
 import { useSong } from "../../context/SongContext";
+import { usePlaylist } from "../../context/PlaylistContext"; // Import PlaylistContext cho chức năng thả tim
 
 const SongDetail = () => {
   const { currentSong, getSongDetail, loading, songsByType } = useSong();
+  const { likedSongIds, toggleLikeSong } = usePlaylist(); // Lấy data từ DB
+
   const [isOpenAddModal, setIsOpenAddModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState<any>(null);
-  const [likedSongs, setLikedSongs] = useState<Record<string, boolean>>({});
+  
   const upNextSongs = songsByType["trending"] || [];
   const { id } = useParams<{ id: string }>();
 
@@ -19,34 +21,28 @@ const SongDetail = () => {
     }
   }, [id]);
 
-  if (loading) {
-    return <div className="text-white p-10">Loading...</div>;
-  }
-
-  if (!currentSong) {
-    return <div className="text-white p-10">Song not found</div>;
-  }
+  if (loading) return <div className="text-white p-10">Loading...</div>;
+  if (!currentSong) return <div className="text-white p-10">Song not found</div>;
 
   const song = currentSong;
-  const isMainSongLiked = likedSongs[song.id];
-
-  const toggleLike = (songId: string) => {
-    setLikedSongs((prev) => ({
-      ...prev,
-      [songId]: !prev[songId],
-    }));
-  };
+  const isMainSongLiked = likedSongIds.includes(song.id);
 
   const handlePlay = () => {
+    // 1. Gom bài hiện tại và danh sách Up Next lại
+    const playlistToPlay = [
+      song,
+      ...upNextSongs.filter((s: any) => s.id !== song.id)
+    ];
+
+    player.loadPlaylist(playlistToPlay);
+
     player.play(song);
   };
 
   const formatDuration = (seconds?: number) => {
     if (!seconds) return "--:--";
-
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
-
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
@@ -92,6 +88,7 @@ const SongDetail = () => {
                 <span>{formatYear(song.releaseDate)}</span>
                 <span>•</span>
                 <span>{formatDuration(song.duration)}</span>
+                
               </div>
             </div>
 
@@ -109,7 +106,7 @@ const SongDetail = () => {
 
               <button
                 onClick={() => {
-                  setSelectedSong(song);
+                  setSelectedSong((song as any).originalData || song);
                   setIsOpenAddModal(true);
                 }}
                 title="Add song to playlist"
@@ -120,7 +117,7 @@ const SongDetail = () => {
 
               <button
                 title={isMainSongLiked ? "Unlike this song" : "Like this song"}
-                onClick={() => toggleLike(song.id)}
+                onClick={() => toggleLikeSong(song.id)}
                 className={`flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer
                   ${isMainSongLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
               >
@@ -151,119 +148,63 @@ const SongDetail = () => {
               .filter((s) => s.id !== song.id)
               .slice(0, 3)
               .map((nextSong, index) => {
-                const isNextSongLiked = likedSongs[nextSong.id];
+                const isNextSongLiked = likedSongIds.includes(nextSong.id);
 
                 return (
-                  <>
-                    <div
-                      key={nextSong.id}
-                      className="group flex items-center gap-4 rounded-xl p-3 hover:bg-[#19282E]/50 transition-colors cursor-pointer"
-                    >
-                      {/* Index */}
-                      <div className="hidden lg:flex w-8 justify-center text-gray-400 group-hover:text-white">
-                        {index + 1}
-                      </div>
-
-                      {/* Image */}
-                      <img
-                        className="h-12 w-12 rounded bg-cover bg-center"
-                        src={nextSong.image}
-                      />
-
-                      {/* Info */}
-                      <div
-                        onClick={() => {
-                          player.loadPlaylist(trendingSongs);
-                          player.play(nextSong);
-                        }}
-                        className="flex flex-1 flex-col"
-                      >
-                        <p className="text-sm font-bold text-white hover:text-primary transition-all duration-300">
-                          {nextSong.title}
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          {nextSong.artist}
-                        </p>
-                      </div>
-
-                      {/* Add */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedSong(nextSong);
-                          setIsOpenAddModal(true);
-                        }}
-                        className="flex h-12 w-12 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 cursor-pointer"
-                      >
-                        <span className="material-symbols-outlined text-2xl">
-                          add
-                        </span>
-                      </button>
-
-                      {/* Like */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleLike(nextSong.id);
-                        }}
-                        className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
-                        ${
-                          isNextSongLiked
-                            ? "text-primary scale-110"
-                            : "text-gray-400 hover:text-primary"
-                        }`}
-                      >
-                        <span className="material-symbols-outlined text-2xl">
-                          favorite
-                        </span>
-                      </button>
+                  <div
+                    key={nextSong.id}
+                    className="group flex items-center gap-4 rounded-xl p-3 hover:bg-[#19282E]/50 transition-colors cursor-pointer"
+                  >
+                    {}
+                    <div className="hidden lg:flex w-8 justify-center text-gray-400 group-hover:text-white">
+                      {index + 1}
                     </div>
 
+                    {}
                     <img
-                      className="h-12 w-12 rounded bg-cover bg-center bg-gray-800"
+                      className="h-12 w-12 rounded bg-cover bg-center shrink-0"
                       src={nextSong.image}
                       alt={nextSong.title}
                     />
 
+                    {}
                     <div
                       onClick={() => {
-                        player.loadPlaylist(trendingSongs);
+                        player.loadPlaylist(upNextSongs);
                         player.play(nextSong);
                       }}
-                      className="flex flex-1 flex-col"
+                      className="flex flex-1 flex-col min-w-0"
                     >
-                      <p className="text-sm font-bold text-white hover:text-primary transition-all duration-300">
+                      <p className="text-sm font-bold text-white hover:text-primary transition-all duration-300 truncate">
                         {nextSong.title}
                       </p>
-                      <p className="text-xs text-gray-400">{nextSong.artist}</p>
+                      <p className="text-xs text-gray-400 truncate">{nextSong.artist}</p>
                     </div>
 
+                    {}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setSelectedSong(nextSong);
+                        setSelectedSong((nextSong as any).originalData || nextSong);
                         setIsOpenAddModal(true);
                       }}
-                      className="flex h-12 w-12 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 cursor-pointer opacity-0 group-hover:opacity-100"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#27313a] border border-[#3a4955] text-white hover:bg-[#3a4955] transition-all duration-300 opacity-0 group-hover:opacity-100"
                     >
-                      <span className="material-symbols-outlined text-2xl">
-                        add
-                      </span>
+                      <span className="material-symbols-outlined text-xl">add</span>
                     </button>
 
+                    {}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        toggleLike(nextSong.id);
+                        toggleLikeSong(nextSong.id);
                       }}
-                      className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 cursor-pointer
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all duration-300
                       ${isNextSongLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
                     >
-                      <span className="material-symbols-outlined text-2xl">
-                        favorite
-                      </span>
+                      <span className="material-symbols-outlined text-xl">favorite</span>
                     </button>
-                  </>
+                  </div>
                 );
               })}
           </div>

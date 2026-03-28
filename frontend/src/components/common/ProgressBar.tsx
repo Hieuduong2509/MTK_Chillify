@@ -4,6 +4,7 @@ import type { PlayerObserver } from "../../core/player/PlayerObserver";
 import type { Song } from "../../assets/dummyDB";
 import { NextCommand } from "../../core/player/commands/NextCommand";
 import { PreviousCommand } from "../../core/player/commands/PreviousCommand";
+import { usePlaylist } from "../../context/PlaylistContext";
 
 const ProgressBar = () => {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
@@ -17,7 +18,12 @@ const ProgressBar = () => {
   const [lastVolume, setLastVolume] = useState(0.7);
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+
+  const { likedSongIds, toggleLikeSong } = usePlaylist();
+  const isLiked = currentSong ? likedSongIds.includes(currentSong.id) : false;
+
+  const [showQueue, setShowQueue] = useState(false);
+  const [showLyrics, setShowLyrics] = useState(false);
 
   useEffect(() => {
     const observer: PlayerObserver = {
@@ -76,11 +82,14 @@ const ProgressBar = () => {
   const nextCommand = new NextCommand();
   const previousCommand = new PreviousCommand();
 
+  const playlist = typeof (player as any).getPlaylist === 'function' ? (player as any).getPlaylist() : [];
+  const currentIdx = typeof (player as any).getCurrentIndex === 'function' ? (player as any).getCurrentIndex() : -1;
+
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 bg-[#0f172a] px-6 py-4 lg:py-0 flex flex-col lg:flex-row justify-between z-50">
-      {/* ========= DESKTOP ========= */}
+      {}
       <div className="hidden lg:flex w-full items-center justify-between">
-        {/* LEFT - SONG INFO */}
+        {}
         <div className="flex items-center gap-4 w-1/4 min-w-[220px]">
           <img
             src={currentSong.image}
@@ -95,11 +104,14 @@ const ProgressBar = () => {
             <p className="text-xs text-gray-400">{currentSong.artist}</p>
           </div>
 
+          {}
           <button
             title={isLiked ? "Unlike this song" : "Like this song"}
-            onClick={() => setIsLiked(!isLiked)}
+            onClick={() => {
+              if (currentSong) toggleLikeSong(currentSong.id);
+            }}
             className={`flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer
-                  ${isLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
+                      ${isLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
           >
             <span className={`material-symbols-outlined text-2xl`}>
               favorite
@@ -109,14 +121,15 @@ const ProgressBar = () => {
 
         {/* CENTER - CONTROLS + PROGRESS */}
         <div className="flex flex-col items-center w-2/4 max-w-2xl">
-          {/* CONTROLS */}
           <div className="flex items-center gap-6 mb-2">
-            {/* SHUFFLE */}
             <button
               onClick={() => {
-                setIsShuffle(!isShuffle);
-                setIsRepeat(false);
-                player.toggleShuffle();
+                const newValue = !isShuffle;
+                setIsShuffle(newValue);
+                if (newValue) {
+                  setIsRepeat(false); 
+                }
+                player.setShuffleMode(newValue); 
               }}
               className={`transition ${
                 isShuffle
@@ -128,7 +141,6 @@ const ProgressBar = () => {
               <span className="material-symbols-outlined text-xl">shuffle</span>
             </button>
 
-            {/* PREVIOUS */}
             <button
               onClick={() => previousCommand.execute()}
               className="text-gray-400 hover:text-white transition cursor-pointer"
@@ -139,7 +151,6 @@ const ProgressBar = () => {
               </span>
             </button>
 
-            {/* PLAY */}
             <button
               onClick={() => player.play()}
               disabled={playerState === "playing"}
@@ -151,7 +162,6 @@ const ProgressBar = () => {
               </span>
             </button>
 
-            {/* PAUSE */}
             <button
               onClick={() => player.pause()}
               disabled={playerState !== "playing"}
@@ -163,7 +173,6 @@ const ProgressBar = () => {
               </span>
             </button>
 
-            {/* STOP */}
             <button
               onClick={() => player.stop()}
               disabled={playerState === "stopped"}
@@ -173,7 +182,6 @@ const ProgressBar = () => {
               <span className="material-symbols-outlined text-black">stop</span>
             </button>
 
-            {/* NEXT */}
             <button
               onClick={() => nextCommand.execute()}
               className="text-gray-400 hover:text-white transition cursor-pointer"
@@ -184,12 +192,14 @@ const ProgressBar = () => {
               </span>
             </button>
 
-            {/* REPEAT ONE */}
             <button
               onClick={() => {
-                setIsRepeat(!isRepeat);
-                setIsShuffle(false);
-                player.toggleRepeatOne();
+                const newValue = !isRepeat;
+                setIsRepeat(newValue);
+                if (newValue) {
+                  setIsShuffle(false); 
+                }
+                player.setRepeatOneMode(newValue); 
               }}
               className={`transition ${
                 isRepeat
@@ -232,17 +242,27 @@ const ProgressBar = () => {
 
         {/* RIGHT - QUEUE + VOLUME + CLOSE */}
         <div className="flex items-center gap-5 w-1/4 justify-end min-w-[220px]">
-          {/* Lyrics */}
           <span
-            className="material-symbols-outlined text-gray-400 cursor-pointer hover:text-white transition"
+            onClick={() => {
+              setShowLyrics(!showLyrics);
+              setShowQueue(false); 
+            }}
+            className={`material-symbols-outlined cursor-pointer transition ${
+              showLyrics ? "text-blue-500" : "text-gray-400 hover:text-white"
+            }`}
             title="Lyrics"
           >
             lyrics
           </span>
 
-          {/* Queue */}
           <span
-            className="material-symbols-outlined text-gray-400 cursor-pointer hover:text-white transition"
+            onClick={() => {
+              setShowQueue(!showQueue);
+              setShowLyrics(false); 
+            }}
+            className={`material-symbols-outlined cursor-pointer transition ${
+              showQueue ? "text-blue-500" : "text-gray-400 hover:text-white"
+            }`}
             title="Queue"
           >
             queue_music
@@ -281,20 +301,16 @@ const ProgressBar = () => {
             }}
             className="relative w-28 h-1 bg-gray-700 rounded-full cursor-pointer group"
           >
-            {/* Filled bar */}
             <div
               className="absolute left-0 top-0 h-full bg-blue-500 rounded-full"
               style={{ width: `${volumePercent}%` }}
             />
-
-            {/* Thumb */}
             <div
               className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition"
               style={{ left: `calc(${volumePercent}% - 6px)` }}
             />
           </div>
 
-          {/* CLOSE BUTTON */}
           <button
             onClick={() => player.stop()}
             className="text-gray-400 hover:text-white transition cursor-pointer"
@@ -303,13 +319,69 @@ const ProgressBar = () => {
             <span className="material-symbols-outlined text-xl">close</span>
           </button>
         </div>
+
+        {showQueue && (
+          <div className="absolute bottom-[100px] right-6 w-80 max-h-96 bg-[#1e293b] rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-4 overflow-y-auto border border-gray-700 z-50">
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-700">
+              <h3 className="font-bold text-white">Queues</h3>
+              <button onClick={() => setShowQueue(false)} className="text-gray-400 hover:text-white">
+                <span className="material-symbols-outlined text-sm">close</span>
+              </button>
+            </div>
+            
+            <div className="flex flex-col gap-1">
+              {playlist.length === 0 ? (
+                <p className="text-gray-400 text-sm text-center py-4">Empty Queue</p>
+              ) : (
+                playlist.map((s: Song, idx: number) => {
+                  const isPlaying = currentIdx === idx;
+                  return (
+                    <div 
+                      key={idx} 
+                      onClick={() => player.play(s)} 
+                      className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${isPlaying ? 'bg-blue-500/20' : 'hover:bg-white/5'}`}
+                    >
+                      <img src={s.image} alt={s.title} className="w-10 h-10 rounded object-cover" />
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm truncate font-medium ${isPlaying ? 'text-blue-500' : 'text-white'}`}>{s.title}</p>
+                        <p className="text-xs text-gray-400 truncate">{s.artist}</p>
+                      </div>
+                      {isPlaying && <span className="material-symbols-outlined text-blue-500 text-sm">equalizer</span>}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        )}
+
+        {showLyrics && (
+          <div className="absolute bottom-[100px] right-6 w-96 max-h-[400px] bg-[#1e293b] rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-6 overflow-y-auto border border-gray-700 z-50">
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-700">
+              <h3 className="font-bold text-white">Lyrics</h3>
+              <button onClick={() => setShowLyrics(false)} className="text-gray-400 hover:text-white">
+                <span className="material-symbols-outlined text-sm">close</span>
+              </button>
+            </div>
+            <div className="text-center text-gray-300 leading-relaxed font-medium">
+              {(currentSong as any).lyrics ? (
+                <p className="whitespace-pre-line">{(currentSong as any).lyrics}</p>
+              ) : (
+                <div className="py-10 flex flex-col items-center gap-3 opacity-60">
+                  <span className="material-symbols-outlined text-4xl">lyrics</span>
+                  <p>Updating lyrics for<br/><strong className="text-white">{currentSong.title}</strong>...</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
       </div>
 
-      {/* ========= TABLET + MOBILE ========= */}
+      {}
       <div className="flex flex-col gap-3 lg:hidden">
         {/* TOP */}
         <div className="flex items-center justify-between">
-          {/* LEFT - SONG INFO */}
           <div className="flex items-center gap-3 min-w-0">
             <img
               src={currentSong.image}
@@ -326,24 +398,23 @@ const ProgressBar = () => {
             </div>
           </div>
 
-          {/* RIGHT - ICONS */}
           <div className="flex items-center gap-4">
-            {/* Favourite */}
+            {}
             <button
               title={isLiked ? "Unlike this song" : "Like this song"}
-              onClick={() => setIsLiked(!isLiked)}
+              onClick={() => {
+                if (currentSong) toggleLikeSong(currentSong.id);
+              }}
               className={`flex items-center justify-center rounded-full transition-all duration-300 cursor-pointer
-                  ${isLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
+                    ${isLiked ? "text-primary scale-110" : "text-gray-400 hover:text-primary"}`}
             >
               <span className={`material-symbols-outlined text-2xl`}>
                 favorite
               </span>
             </button>
 
-            {/* Add to playlist */}
             <span className="material-symbols-outlined text-gray-400">add</span>
 
-            {/* Play - Pause */}
             <button
               onClick={() => {
                 if (playerState === "playing") {
@@ -358,7 +429,6 @@ const ProgressBar = () => {
               </span>
             </button>
 
-            {/* Stop */}
             <button
               onClick={() => {
                 player.stop();

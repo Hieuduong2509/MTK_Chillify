@@ -1,12 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { player } from "../../core/player/Player";
-// Nhớ import usePlaylist từ Context
 import { usePlaylist } from "../../context/PlaylistContext";
 
 import { Link } from "react-router-dom";
 import type { Song } from "../../assets/dummyDB";
 
-const SongCard = ({ song }: { song: any }) => {
+interface SongCardProps {
+  song: any;
+  onClick?: () => void;
+  onPlay?: () => void;
+}
+
+const SongCard = ({ song, onClick, onPlay }: SongCardProps) => {
   const navigate = useNavigate();
 
   const { likedSongIds, toggleLikeSong } = usePlaylist();
@@ -14,8 +19,15 @@ const SongCard = ({ song }: { song: any }) => {
   const isLiked = likedSongIds.includes(song.id);
 
   const handlePlay = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    player.play(song.originalData || song);
+    e.stopPropagation(); 
+
+    if (onPlay) {
+      onPlay();
+    } else if (onClick) {
+      onClick();
+    } else {
+      player.play(song.originalData || song);
+    }
   };
 
   const handleCardClick = () => {
@@ -26,7 +38,7 @@ const SongCard = ({ song }: { song: any }) => {
     e.stopPropagation();
 
     if (!localStorage.getItem("token")) {
-      alert("Vui lòng đăng nhập để thực hiện chức năng này!");
+      alert("Please log in to like songs!");
       return;
     }
 
@@ -45,7 +57,7 @@ const SongCard = ({ song }: { song: any }) => {
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 bg-gray-800"
         />
 
-        {/* Nút Play hiển thị khi hover */}
+        {}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
           <button
             onClick={handlePlay}
