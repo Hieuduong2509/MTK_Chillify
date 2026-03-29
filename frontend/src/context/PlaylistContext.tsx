@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { apiRequest } from '../api/api'; 
+import { useAuth } from './AuthContext'; 
 
 interface Song {
   songId: string;
@@ -40,6 +41,8 @@ interface PlaylistContextType {
 const PlaylistContext = createContext<PlaylistContextType | undefined>(undefined);
 
 export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { token } = useAuth();
+
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | null>(null);
   const [loading, setLoading] = useState(false);
@@ -52,21 +55,29 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       const data = await apiRequest<Playlist[]>('playlist', '');
       setPlaylists(data);
-    } catch (error) { console.error(error); }
-    finally { setLoading(false); }
+    } catch (error) { 
+      console.error(error); 
+    } finally { 
+      setLoading(false); 
+    }
   }, []);
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (token) {
       fetchPlaylists();
+    } else {
+      setPlaylists([]);
+      setLikedSongIds([]);
+      setLikedSongsData([]);
+      setCurrentPlaylist(null);
     }
-  }, [fetchPlaylists]); 
+  }, [token, fetchPlaylists]); 
 
   const likedPlaylist = playlists.find(p => p.playlistType === 'LIKED' || p.playlistName === 'Liked Songs');
 
   useEffect(() => {
     const fetchLikedSongs = async () => {
-      if (likedPlaylist && localStorage.getItem("token")) {
+      if (likedPlaylist && token) {
         try {
           const songs = await apiRequest<any[]>('playlist', `/${likedPlaylist.id}/liked-songs`);
           setLikedSongIds(songs.map((s: any) => s.songId));
@@ -77,7 +88,7 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
     };
     fetchLikedSongs();
-  }, [likedPlaylist]); 
+  }, [likedPlaylist, token]); 
 
   const removeSongFromPlaylist = async (playlistId: string, songId: string) => {
     try {
@@ -122,8 +133,11 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       const data = await apiRequest<Playlist>('playlist', `/${id}`);
       setCurrentPlaylist(data);
-    } catch (error) { console.error(error); }
-    finally { setLoading(false); }
+    } catch (error) { 
+      console.error(error); 
+    } finally { 
+      setLoading(false); 
+    }
   }, []);
 
   const addSongToPlaylist = async (playlistId: string, songId: string) => {
@@ -145,21 +159,27 @@ export const PlaylistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       await apiRequest('playlist', '', { method: 'POST', body: { playlistName, description } });
       await fetchPlaylists();
-    } catch (error) { console.error(error); }
+    } catch (error) { 
+      console.error(error); 
+    }
   };
 
   const updatePlaylist = async (id: string, playlistName: string, description: string) => {
     try {
       await apiRequest('playlist', `/${id}`, { method: 'PUT', body: { playlistName, description } });
       await fetchPlaylists();
-    } catch (error) { console.error(error); }
+    } catch (error) { 
+      console.error(error); 
+    }
   };
 
   const deletePlaylist = async (id: string) => {
     try {
       await apiRequest('playlist', `/${id}`, { method: 'DELETE' });
       setPlaylists(prev => prev.filter(p => p.id !== id));
-    } catch (error) { console.error(error); }
+    } catch (error) { 
+      console.error(error); 
+    }
   };
 
   return (

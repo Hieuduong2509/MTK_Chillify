@@ -32,9 +32,17 @@ const SectionDetail = () => {
     return <div className="text-white p-10">Section not found!</div>;
   }
 
+  // Nút Play All ở trên cùng (Giữ nguyên hoặc bạn có thể bật Shuffle ở đây nếu muốn)
   const handlePlayAll = () => {
     player.loadPlaylist(songs);
     player.play(songs[0]);
+  };
+
+  // 🔥 HÀM XỬ LÝ KHI BẤM PLAY 1 BÀI CỤ THỂ
+  const handlePlaySong = (clickedSong: any) => {
+    player.loadPlaylist(songs);
+    player.setShuffleMode(true); // Tự động bật Random
+    player.play(clickedSong);
   };
 
   return (
@@ -66,7 +74,12 @@ const SectionDetail = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-4 gap-y-8">
           {/* Song card */}
           {songs.map((song) => (
-            <SongCard key={song.id} song={song} />
+            <SongCard 
+              key={song.id} 
+              song={song} 
+              // 🔥 TRUYỀN HÀM XỬ LÝ XUỐNG
+              onPlay={() => handlePlaySong(song)} 
+            />
           ))}
         </div>
       </div>

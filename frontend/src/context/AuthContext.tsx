@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 import { apiRequest } from "../api/api";
+import { player } from "../core/player/Player"; 
 
 interface User {
   userId: string;
@@ -195,9 +196,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // ===== LOGOUT =====
+  // =====   =====
   const logout = () => {
     alert("Logging out...");
+    
+    try {
+      player.stop();
+      player.loadPlaylist([]);
+    } catch (error) {
+      console.error("Lỗi khi tắt nhạc:", error);
+    }
+
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 

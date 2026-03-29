@@ -1,12 +1,12 @@
 import { useMediaQuery } from "react-responsive";
-
 import { sections } from "../../assets/assets";
 import SongCard from "../../components/song/SongCard";
 import { useNavigate } from "react-router-dom";
 import { useSong } from "../../context/SongContext";
 import { useEffect } from "react";
 
-import { homeSections } from "../../assets/assets";
+// 🔥 QUAN TRỌNG: Import player vào đây
+import { player } from "../../core/player/Player";
 
 const Home = () => {
   const {
@@ -39,8 +39,19 @@ const Home = () => {
   return (
     <div className="px-4 md:px-7 py-4 md:py-6 space-y-8 pb-24">
       {sections.map((section) => {
+        // Lấy toàn bộ bài hát của danh mục này
         const songs = songsByType[section.id] || [];
         const previewSongs = songs.slice(0, MAX_SONG_ITEM);
+
+        // 🔥 HÀM XỬ LÝ KHI BẤM PLAY Ở TRANG HOME
+        const handlePlaySectionSong = (clickedSong: any) => {
+          // 1. Nạp TẤT CẢ bài hát của danh mục này vào Player (Không chỉ nạp preview)
+          player.loadPlaylist(songs);
+          // 2. Bật chế độ Random (Shuffle)
+          player.setShuffleMode(true);
+          // 3. Phát bài hát vừa click
+          player.play(clickedSong);
+        };
 
         return (
           <section key={`home-section-${section.id}`}>
@@ -71,7 +82,12 @@ const Home = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {previewSongs.map((song) => (
-                  <SongCard key={`song-${song.id}`} song={song} />
+                  <SongCard 
+                    key={`song-${song.id}`} 
+                    song={song} 
+                    // 🔥 TRUYỀN HÀM XỬ LÝ XUỐNG CHO SONG CARD
+                    onPlay={() => handlePlaySectionSong(song)} 
+                  />
                 ))}
               </div>
             )}
