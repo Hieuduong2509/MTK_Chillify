@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { player } from "../../core/player/Player";
 import type { PlayerObserver } from "../../core/player/PlayerObserver";
 import type { Song } from "../../assets/dummyDB";
 import { NextCommand } from "../../core/player/commands/NextCommand";
 import { PreviousCommand } from "../../core/player/commands/PreviousCommand";
 import { usePlaylist } from "../../context/PlaylistContext";
+
+import { lyricProcessor, type LyricLine } from "../../core/player/strategies/LyricParser";
 
 const ProgressBar = () => {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
@@ -24,6 +26,84 @@ const ProgressBar = () => {
 
   const [showQueue, setShowQueue] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
+
+
+  const [autoLyrics, setAutoLyrics] = useState<string>("");
+  const [isFetchingLyrics, setIsFetchingLyrics] = useState(false);
+
+  useEffect(() => {
+    const fetchLyrics = async () => {
+      if (!currentSong) return;
+
+      setAutoLyrics("");
+      setIsFetchingLyrics(true);
+      
+      const dbLyrics = 
+        (currentSong as any).lyrics || 
+        (currentSong as any).originalData?.lyrics || 
+        (currentSong as any).Lyrics ||
+        (currentSong as any).originalData?.Lyrics;
+
+      if (dbLyrics && dbLyrics.trim() !== "") {
+        setAutoLyrics(dbLyrics);
+        setIsFetchingLyrics(false);
+        return;
+      }
+
+      try {
+        const title = encodeURIComponent(currentSong.title);
+        const artist = encodeURIComponent(currentSong.artist || "");
+
+        //TEST
+        //const title = encodeURIComponent("Shape of You");
+        //const artist = encodeURIComponent("Ed Sheeran");
+
+
+        const res = await fetch(`https://lrclib.net/api/get?track_name=${title}&artist_name=${artist}`);
+        if (res.ok) {
+          const data = await res.json();
+          const fetchedLyrics = data.syncedLyrics || data.plainLyrics || "";
+          setAutoLyrics(fetchedLyrics);
+        } else {
+          setAutoLyrics("");
+        }
+      } catch (error) {
+        console.error("Lỗi khi đi xin lời bài hát:", error);
+      } finally {
+        setIsFetchingLyrics(false);
+      }
+    };
+
+    fetchLyrics();
+  }, [currentSong]);
+
+  // Phân tích lời bài hát 1 lần
+  const parsedLyrics = useMemo(() => lyricProcessor.process(autoLyrics), [autoLyrics]);
+
+  // Tính toán dòng nào đang hát
+  const activeIndex = useMemo(() => {
+    if (parsedLyrics.length === 0 || parsedLyrics[0].time === 0) return -1;
+    let idx = -1;
+    for (let i = 0; i < parsedLyrics.length; i++) {
+      if (currentTime >= parsedLyrics[i].time) {
+        idx = i;
+      } else {
+        break; 
+      }
+    }
+    return idx;
+  }, [currentTime, parsedLyrics]);
+
+  const activeLyricRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (showLyrics && activeLyricRef.current) {
+      activeLyricRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [activeIndex, showLyrics]);
 
   useEffect(() => {
     const observer: PlayerObserver = {
@@ -87,9 +167,8 @@ const ProgressBar = () => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 bg-[#0f172a] px-6 py-4 lg:py-0 flex flex-col lg:flex-row justify-between z-50">
-      {}
+      {/* ========= DESKTOP ========= */}
       <div className="hidden lg:flex w-full items-center justify-between">
-        {}
         <div className="flex items-center gap-4 w-1/4 min-w-[220px]">
           <img
             src={currentSong.image}
@@ -104,7 +183,6 @@ const ProgressBar = () => {
             <p className="text-xs text-gray-400">{currentSong.artist}</p>
           </div>
 
-          {}
           <button
             title={isLiked ? "Unlike this song" : "Like this song"}
             onClick={() => {
@@ -355,30 +433,58 @@ const ProgressBar = () => {
           </div>
         )}
 
+        {/* ========================================= */}
+        {/* BẢNG LỜI BÀI HÁT (CÓ CHẠY THEO NHẠC)        */}
+        {/* ========================================= */}
         {showLyrics && (
-          <div className="absolute bottom-[100px] right-6 w-96 max-h-[400px] bg-[#1e293b] rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-6 overflow-y-auto border border-gray-700 z-50">
-            <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-700">
-              <h3 className="font-bold text-white">Lyrics</h3>
-              <button onClick={() => setShowLyrics(false)} className="text-gray-400 hover:text-white">
-                <span className="material-symbols-outlined text-sm">close</span>
+          <div className="absolute bottom-[100px] right-6 w-96 max-h-[500px] bg-[#1e293b]/95 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-6 overflow-hidden border border-gray-700 z-50 flex flex-col">
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-700 shrink-0">
+              <h3 className="font-bold text-white text-lg">Lời bài hát</h3>
+              <button onClick={() => setShowLyrics(false)} className="text-gray-400 hover:text-white transition-colors cursor-pointer">
+                <span className="material-symbols-outlined text-xl">close</span>
               </button>
             </div>
-            <div className="text-center text-gray-300 leading-relaxed font-medium">
-              {(currentSong as any).lyrics ? (
-                <p className="whitespace-pre-line">{(currentSong as any).lyrics}</p>
+            
+            <div className="flex-1 overflow-y-auto hide-scrollbar scroll-smooth text-center pr-2" id="lyrics-container">
+              {isFetchingLyrics ? (
+                <div className="h-full flex flex-col items-center justify-center gap-4 opacity-70 mt-20">
+                  <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-sm font-medium text-gray-300">Đang tìm lời bài hát cho<br/><strong className="text-white text-base mt-1 block">{currentSong.title}</strong></p>
+                </div>
+              ) : parsedLyrics.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center gap-4 opacity-60 mt-20">
+                  <span className="material-symbols-outlined text-6xl text-gray-500">music_off</span>
+                  <p className="text-sm text-gray-300">Không tìm thấy lời bài hát cho<br/><strong className="text-white text-base mt-1 block">{currentSong.title}</strong></p>
+                </div>
               ) : (
-                <div className="py-10 flex flex-col items-center gap-3 opacity-60">
-                  <span className="material-symbols-outlined text-4xl">lyrics</span>
-                  <p>Updating lyrics for<br/><strong className="text-white">{currentSong.title}</strong>...</p>
+                <div className="py-24 flex flex-col gap-6">
+                  {parsedLyrics.map((line: LyricLine, index: number) => {
+                    const isActive = index === activeIndex;
+                    return (
+                      <p 
+                        key={index} 
+                        ref={isActive ? activeLyricRef : null}
+                        className={`transition-all duration-500 ease-out font-medium leading-relaxed ${
+                          isActive 
+                            ? "text-blue-400 scale-[1.15] drop-shadow-[0_0_12px_rgba(96,165,250,0.6)] text-xl py-2" 
+                            : "text-gray-400 opacity-50 hover:opacity-100 hover:text-gray-200 cursor-pointer text-base"
+                        }`}
+                        onClick={() => {
+                          if (line.time > 0) player.seek(line.time);
+                        }}
+                      >
+                        {line.text}
+                      </p>
+                    );
+                  })}
                 </div>
               )}
             </div>
           </div>
         )}
-
       </div>
 
-      {}
+      {/* ========= TABLET + MOBILE ========= */}
       <div className="flex flex-col gap-3 lg:hidden">
         {/* TOP */}
         <div className="flex items-center justify-between">
@@ -399,7 +505,6 @@ const ProgressBar = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            {}
             <button
               title={isLiked ? "Unlike this song" : "Like this song"}
               onClick={() => {
